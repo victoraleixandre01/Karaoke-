@@ -1,0 +1,260 @@
+Toca y mantén pulsado el código de abajo → **Seleccionar todo → Copiar**, luego vuelve a GitHub y pégalo en el editor:
+
+```
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Karaoke 🎤</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #08080f; color: #fff; overflow: hidden; }
+.screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh; padding: 2rem 1.5rem; gap: 1.4rem; }
+.screen.active { display: flex; }
+#screen-idle { background: radial-gradient(ellipse at 55% 25%, #1e1050 0%, #08080f 65%); }
+.logo { font-size: clamp(2.8rem, 10vw, 5rem); font-weight: 800; letter-spacing: -3px; }
+.logo span { color: #a78bfa; }
+.tagline { font-size: 0.8rem; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.3); text-align: center; }
+#btn-start { width: 100%; max-width: 380px; padding: 1.15rem 2rem; border-radius: 50px; background: #7c3aed; border: none; color: #fff; font-size: 1.15rem; font-weight: 600; cursor: pointer; -webkit-appearance: none; }
+.or-line { color: rgba(255,255,255,0.22); font-size: 0.85rem; }
+.manual-row { display: flex; gap: 8px; width: 100%; max-width: 380px; }
+.manual-row input { flex: 1; padding: 0.9rem 1rem; border-radius: 14px; background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); color: #fff; font-size: 1rem; outline: none; -webkit-appearance: none; }
+.manual-row input::placeholder { color: rgba(255,255,255,0.28); }
+.manual-row button { padding: 0.9rem 1.2rem; border-radius: 14px; background: #7c3aed; border: none; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; -webkit-appearance: none; }
+.msg { font-size: 0.88rem; color: rgba(255,130,130,0.95); text-align: center; min-height: 1.1em; line-height: 1.5; max-width: 340px; }
+.msg.ok { color: rgba(130,255,170,0.95); }
+.msg.info { color: rgba(167,139,250,0.9); }
+#screen-listening { background: radial-gradient(ellipse at 50% 35%, #1a1040 0%, #08080f 65%); }
+.pulse-wrap { position: relative; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pr { position: absolute; border-radius: 50%; border: 2px solid rgba(124,58,237,0.4); animation: pr 2s ease-in-out infinite; }
+.pr1 { width:150px; height:150px; }
+.pr2 { width:115px; height:115px; border-color:rgba(124,58,237,0.6); animation-delay:.35s; }
+.pr3 { width:82px; height:82px; border-color:rgba(124,58,237,0.85); animation-delay:.7s; }
+@keyframes pr { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.09);opacity:0.55} }
+.mic-big { font-size: 3rem; z-index:1; }
+#waveform { display:flex; align-items:center; gap:5px; height:52px; }
+.bar { width:6px; background:#7c3aed; border-radius:3px; height:8px; animation:wv 1s ease-in-out infinite; }
+@keyframes wv { 0%,100%{height:8px} 50%{height:46px} }
+.listen-lbl { font-size: 1.1rem; color: rgba(255,255,255,0.62); text-align: center; line-height: 1.9; }
+.listen-lbl b { color:#a78bfa; font-weight:600; }
+.timer-arc { font-size: 2rem; font-weight: 700; color: #a78bfa; }
+#btn-cancel { padding: 0.7rem 2.2rem; border-radius: 50px; background: transparent; border: 1.5px solid rgba(255,255,255,0.18); color: rgba(255,255,255,0.48); cursor: pointer; font-size: 0.95rem; -webkit-appearance: none; }
+#screen-found { background: radial-gradient(ellipse at 50% 35%, #0c1830 0%, #08080f 65%); }
+.badge-ok { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: #a78bfa; padding: 0.3rem 1.1rem; border-radius: 50px; border: 1px solid rgba(167,139,250,0.35); background: rgba(124,58,237,0.12); }
+#found-title { font-size: clamp(1.7rem, 6vw, 2.6rem); font-weight: 700; text-align: center; max-width: 480px; line-height: 1.2; }
+#found-artist { font-size: 1.1rem; color: rgba(255,255,255,0.42); }
+.found-btns { display:flex; gap:12px; margin-top:0.4rem; flex-wrap:wrap; justify-content:center; }
+.btn-p { padding:0.95rem 2.4rem; border-radius:50px; background:#7c3aed; border:none; color:#fff; font-size:1rem; font-weight:600; cursor:pointer; -webkit-appearance:none; }
+.btn-p:disabled { opacity:0.5; }
+.btn-s { padding:0.95rem 2rem; border-radius:50px; background:transparent; border:1.5px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.62); font-size:1rem; cursor:pointer; -webkit-appearance:none; }
+#screen-karaoke { justify-content:flex-start; padding:0; gap:0; min-height:100vh; }
+#k-hdr { display:flex; align-items:center; justify-content:space-between; padding:0.9rem 1.2rem; width:100%; flex-shrink:0; border-bottom:1px solid rgba(255,255,255,0.07); background:rgba(0,0,0,0.55); }
+.k-info { min-width:0; flex:1; padding-right:12px; }
+.k-info .kt { font-size:0.95rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.k-info .ka { font-size:0.75rem; color:rgba(255,255,255,0.36); margin-top:2px; }
+.k-btns { display:flex; gap:7px; flex-shrink:0; }
+.k-btns button { padding:0.42rem 0.9rem; border-radius:20px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.13); color:rgba(255,255,255,0.7); cursor:pointer; font-size:0.82rem; -webkit-appearance:none; }
+#lyrics-win { flex:1; overflow:hidden; width:100%; display:flex; align-items:center; justify-content:center; padding:1.5rem 1rem; }
+#lyrics-box { display:flex; flex-direction:column; align-items:center; gap:1.5rem; width:100%; max-width:860px; transition:transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
+.ll { font-size:clamp(1.25rem,4.5vw,2rem); font-weight:600; text-align:center; color:rgba(255,255,255,0.16); transition:color 0.38s, font-size 0.38s, text-shadow 0.38s; line-height:1.45; padding:0.15rem 0.8rem; cursor:pointer; user-select:none; }
+.ll.past { color:rgba(167,139,250,0.32); }
+.ll.next { color:rgba(255,255,255,0.30); }
+.ll.active { color:#fff; font-size:clamp(1.65rem,6vw,2.8rem); text-shadow:0 0 55px rgba(124,58,237,0.95), 0 0 22px rgba(167,139,250,0.6); }
+#k-ftr { padding:0.9rem 1.2rem; width:100%; flex-shrink:0; border-top:1px solid rgba(255,255,255,0.07); background:rgba(0,0,0,0.55); }
+#prog-track { width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; cursor:pointer; touch-action:none; }
+#prog-fill { height:100%; background:#7c3aed; border-radius:3px; width:0%; pointer-events:none; }
+.time-row { display:flex; justify-content:space-between; margin-top:7px; font-size:0.76rem; color:rgba(255,255,255,0.28); }
+</style>
+</head>
+<body>
+<div id="screen-idle" class="screen active">
+  <div class="logo">kara<span>ok</span>e</div>
+  <div class="tagline">canta con tus amigos</div>
+  <button id="btn-start">🎤 Escuchar la canción</button>
+  <div class="or-line">— o busca manualmente —</div>
+  <div class="manual-row">
+    <input id="manual-input" type="text" placeholder="Título · Artista" autocomplete="off" autocorrect="off" spellcheck="false" />
+    <button id="btn-manual">Buscar</button>
+  </div>
+  <p id="idle-msg" class="msg"></p>
+  <p style="font-size:0.72rem;color:rgba(255,255,255,0.18);text-align:center;max-width:300px;line-height:1.6">Abre en Safari o Chrome.<br>Permite el micrófono cuando se pida.</p>
+</div>
+<div id="screen-listening" class="screen">
+  <div class="pulse-wrap">
+    <div class="pr pr1"></div><div class="pr pr2"></div><div class="pr pr3"></div>
+    <span class="mic-big">🎙️</span>
+  </div>
+  <div id="waveform"></div>
+  <div class="timer-arc" id="listen-countdown">8</div>
+  <div class="listen-lbl">Escuchando…<br><b>Acerca el móvil a la música</b></div>
+  <button id="btn-cancel">Cancelar</button>
+  <p id="listen-msg" class="msg info"></p>
+</div>
+<div id="screen-found" class="screen">
+  <div class="badge-ok">Canción encontrada ✓</div>
+  <div id="found-title">—</div>
+  <div id="found-artist">—</div>
+  <div class="found-btns">
+    <button class="btn-p" id="btn-go">▶ Iniciar karaoke</button>
+    <button class="btn-s" id="btn-back">Buscar otra</button>
+  </div>
+  <p id="found-msg" class="msg"></p>
+</div>
+<div id="screen-karaoke" class="screen">
+  <div id="k-hdr">
+    <div class="k-info">
+      <div class="kt" id="k-title">—</div>
+      <div class="ka" id="k-artist"></div>
+    </div>
+    <div class="k-btns">
+      <button id="btn-pp">⏸</button>
+      <button id="btn-rst">↩</button>
+      <button id="btn-exit">✕</button>
+    </div>
+  </div>
+  <div id="lyrics-win"><div id="lyrics-box"></div></div>
+  <div id="k-ftr">
+    <div id="prog-track"><div id="prog-fill"></div></div>
+    <div class="time-row"><span id="t-cur">0:00</span><span id="t-tot">0:00</span></div>
+  </div>
+</div>
+<script>
+'use strict';
+var song=null,lyrics=[],kTimer=null,kStart=0,paused=false,pausedAt=0,mediaRec=null,chunks=[],listenTmr=null,cntTmr=null;
+function show(name){['idle','listening','found','karaoke'].forEach(function(id){document.getElementById('screen-'+id).classList.toggle('active',id===name);});}
+function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el.textContent=text;el.className='msg'+(cls?' '+cls:'');}
+(function(){var wf=document.getElementById('waveform');for(var i=0;i<22;i++){var b=document.createElement('div');b.className='bar';b.style.animationDelay=(i*0.05)+'s';wf.appendChild(b);}})();
+document.getElementById('btn-start').addEventListener('click',startListen);
+document.getElementById('btn-cancel').addEventListener('click',function(){cancelListen();show('idle');});
+document.getElementById('btn-manual').addEventListener('click',manualSearch);
+document.getElementById('manual-input').addEventListener('keydown',function(e){if(e.key==='Enter'){e.target.blur();manualSearch();}});
+document.getElementById('btn-back').addEventListener('click',function(){show('idle');});
+document.getElementById('btn-go').addEventListener('click',loadAndStart);
+document.getElementById('btn-pp').addEventListener('click',togglePause);
+document.getElementById('btn-rst').addEventListener('click',restartK);
+document.getElementById('btn-exit').addEventListener('click',function(){stopTimer();show('idle');});
+document.getElementById('prog-track').addEventListener('click',seekFromEvent);
+document.getElementById('prog-track').addEventListener('touchend',function(e){e.preventDefault();seekFromEvent(e.changedTouches[0]);});
+function seekFromEvent(e){if(!lyrics.length)return;var r=document.getElementById('prog-track').getBoundingClientRect();seekK(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*totalMs());}
+function startListen(){
+  setMsg('idle-msg','');
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setMsg('idle-msg','⚠️ Usa Safari (iOS) o Chrome (Android).');return;}
+  navigator.mediaDevices.getUserMedia({audio:true,video:false})
+    .then(function(stream){
+      chunks=[];
+      var opts={};
+      if(MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))opts.mimeType='audio/webm;codecs=opus';
+      else if(MediaRecorder.isTypeSupported('audio/webm'))opts.mimeType='audio/webm';
+      else if(MediaRecorder.isTypeSupported('audio/mp4'))opts.mimeType='audio/mp4';
+      mediaRec=new MediaRecorder(stream,opts);
+      mediaRec.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
+      mediaRec.start(500);
+      show('listening');
+      startCountdown(8,function(){recognizeAudio(stream);});
+    })
+    .catch(function(err){
+      var txt='⚠️ No se pudo acceder al micrófono.';
+      if(err.name==='NotAllowedError')txt='⚠️ Permiso denegado. Ve a Ajustes > Safari > Micrófono.';
+      setMsg('idle-msg',txt);
+    });
+}
+function startCountdown(secs,cb){
+  var r=secs;
+  document.getElementById('listen-countdown').textContent=r;
+  cntTmr=setInterval(function(){r--;document.getElementById('listen-countdown').textContent=r;if(r<=0){clearInterval(cntTmr);cb();}},1000);
+}
+function cancelListen(){
+  clearTimeout(listenTmr);clearInterval(cntTmr);
+  try{if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();}catch(e){}
+  try{if(mediaRec&&mediaRec.stream)mediaRec.stream.getTracks().forEach(function(t){t.stop();});}catch(e){}
+}
+function recognizeAudio(stream){
+  try{if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();}catch(e){}
+  stream.getTracks().forEach(function(t){t.stop();});
+  setMsg('listen-msg','Identificando canción…','info');
+  var mimeType=(mediaRec&&mediaRec.mimeType)?mediaRec.mimeType:'audio/webm';
+  var blob=new Blob(chunks,{type:mimeType});
+  if(blob.size<1000){setMsg('listen-msg','⚠️ No se captó audio. Sube el volumen de la música.');setTimeout(function(){show('idle');},3000);return;}
+  var form=new FormData();
+  form.append('file',blob,'rec.'+(mimeType.includes('mp4')?'m4a':'webm'));
+  form.append('return','spotify,apple_music');
+  form.append('api_token','test');
+  fetch('https://api.audd.io/',{method:'POST',body:form})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(data.status==='success'&&data.result){song={title:data.result.title,artist:data.result.artist};showFound(song.title,song.artist);}
+      else{setMsg('listen-msg','No reconocida. Busca manualmente.','msg');setTimeout(function(){show('idle');},3000);}
+    })
+    .catch(function(){setMsg('listen-msg','⚠️ Error de red. Usa búsqueda manual.','msg');setTimeout(function(){show('idle');},3000);});
+}
+function manualSearch(){
+  var val=document.getElementById('manual-input').value.trim();
+  if(!val){setMsg('idle-msg','Escribe un título.');return;}
+  setMsg('idle-msg','');
+  var parts=val.split(/[·\-\|]/).map(function(s){return s.trim();});
+  song={title:parts[0]||val,artist:parts[1]||''};
+  showFound(song.title,song.artist);
+}
+function showFound(title,artist){document.getElementById('found-title').textContent=title;document.getElementById('found-artist').textContent=artist||'';setMsg('found-msg','');show('found');}
+function loadAndStart(){
+  if(!song)return;
+  var btn=document.getElementById('btn-go');
+  btn.disabled=true;btn.textContent='Buscando letra…';
+  fetchLyrics(song.title,song.artist)
+    .then(function(result){
+      btn.disabled=false;btn.textContent='▶ Iniciar karaoke';
+      if(!result||result.length===0){setMsg('found-msg','⚠️ No se encontró letra. Prueba: Título · Artista');return;}
+      lyrics=result;beginKaraoke();
+    })
+    .catch(function(){btn.disabled=false;btn.textContent='▶ Iniciar karaoke';setMsg('found-msg','⚠️ Error de red.');});
+}
+function fetchLyrics(title,artist){
+  var url1='https://lrclib.net/api/get?track_name='+encodeURIComponent(title)+(artist?'&artist_name='+encodeURIComponent(artist):'');
+  var url2='https://lrclib.net/api/search?q='+encodeURIComponent(title+(artist?' '+artist:''));
+  function tryGet(url){return fetch(url,{headers:{'Lrclib-Client':'KaraokeApp/1.0'}}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
+  return tryGet(url1).then(function(d){
+    if(d&&!d.error){if(d.syncedLyrics)return parseLRC(d.syncedLyrics);if(d.plainLyrics)return buildPlain(d.plainLyrics);}
+    return tryGet(url2).then(function(arr){
+      if(!arr||!Array.isArray(arr))return null;
+      for(var i=0;i<arr.length;i++){if(arr[i].syncedLyrics)return parseLRC(arr[i].syncedLyrics);}
+      for(var j=0;j<arr.length;j++){if(arr[j].plainLyrics)return buildPlain(arr[j].plainLyrics);}
+      return null;
+    });
+  });
+}
+function parseLRC(lrc){var result=[];lrc.split('\n').forEach(function(line){var m=line.match(/\[(\d+):(\d+\.\d+)\](.*)/);if(m){var ms=(parseInt(m[1])*60+parseFloat(m[2]))*1000;var text=m[3].trim();if(text)result.push({time:ms,text:text});}});return result;}
+function buildPlain(plain){var lines=plain.split('\n').filter(function(l){return l.trim();});var dur=lines.length*3600;return lines.map(function(text,i){return{time:i*(dur/lines.length),text:text};});}
+function beginKaraoke(){
+  document.getElementById('k-title').textContent=song.title;
+  document.getElementById('k-artist').textContent=song.artist||'';
+  buildDOM();show('karaoke');
+  kStart=performance.now();pausedAt=0;paused=false;
+  document.getElementById('btn-pp').textContent='⏸';
+  stopTimer();kTimer=setInterval(tick,80);
+}
+function buildDOM(){var c=document.getElementById('lyrics-box');c.innerHTML='';c.style.transform='translateY(0)';lyrics.forEach(function(line){var el=document.createElement('div');el.className='ll';el.textContent=line.text;var t=line.time;el.addEventListener('click',function(){seekK(t);});c.appendChild(el);});}
+function tick(){if(paused)return;updateAt(performance.now()-kStart);}
+function updateAt(ms){
+  var lines=document.querySelectorAll('.ll');
+  var active=-1;
+  for(var i=lyrics.length-1;i>=0;i--){if(ms>=lyrics[i].time){active=i;break;}}
+  lines.forEach(function(el,i){el.classList.remove('active','past','next');if(i<active)el.classList.add('past');else if(i===active)el.classList.add('active');else if(i===active+1)el.classList.add('next');});
+  if(active>=0&&lines[active]){var win=document.getElementById('lyrics-win');var box=document.getElementById('lyrics-box');var lel=lines[active];box.style.transform='translateY('+(-(Math.max(0,lel.offsetTop-win.offsetHeight/2+lel.offsetHeight/2)))+'px)';}
+  var total=totalMs();
+  document.getElementById('prog-fill').style.width=Math.min(100,(ms/total)*100)+'%';
+  document.getElementById('t-cur').textContent=fmt(ms);
+  document.getElementById('t-tot').textContent=fmt(total);
+}
+function totalMs(){return lyrics.length?lyrics[lyrics.length-1].time+5000:1;}
+function fmt(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function stopTimer(){if(kTimer){clearInterval(kTimer);kTimer=null;}}
+function togglePause(){if(paused){kStart=performance.now()-pausedAt;paused=false;document.getElementById('btn-pp').textContent='⏸';}else{pausedAt=performance.now()-kStart;paused=true;document.getElementById('btn-pp').textContent='▶';}}
+function restartK(){kStart=performance.now();pausedAt=0;paused=false;document.getElementById('btn-pp').textContent='⏸';document.getElementById('lyrics-box').style.transform='translateY(0)';updateAt(0);}
+function seekK(ms){kStart=performance.now()-ms;pausedAt=ms;updateAt(ms);}
+</script>
+</body>
+</html>
+```
+
+Una vez pegado, pulsa el botón verde **"Commit changes..."** arriba y luego **"Commit changes"** en el popup. ¡Ya casi está! 🎤
