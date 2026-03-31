@@ -55,26 +55,56 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 .btn-s { padding: 0.95rem 2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ccc; color: #555; font-size: 1rem; cursor: pointer; -webkit-appearance: none; }
 .btn-s:active { background: #eee; }
 
-/* KARAOKE */
-#screen-karaoke { justify-content: flex-start; padding: 0; gap: 0; height: 100vh; height: 100dvh; background: #fff; display: none; flex-direction: column; }
+/* KARAOKE — posición fija total */
+#screen-karaoke {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #fff;
+  flex-direction: column;
+}
 #screen-karaoke.active { display: flex; }
-#k-hdr { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; width: 100%; flex-shrink: 0; border-bottom: 1.5px solid #eee; background: #fff; }
-.k-info { min-width: 0; flex: 1; padding-right: 8px; }
-.k-info .kt { font-size: 0.95rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #111; }
-.k-info .ka { font-size: 0.75rem; color: #888; margin-top: 2px; }
-.k-btns { display: flex; gap: 10px; flex-shrink: 0; align-items: center; }
 
-/* Botones play/pausa grandes y distintos */
+/* Header siempre fijo arriba */
+#k-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  width: 100%;
+  flex-shrink: 0;
+  border-bottom: 1.5px solid #eee;
+  background: #fff;
+  z-index: 10;
+}
+.k-logo { font-size: 1.2rem; font-weight: 800; letter-spacing: -1px; color: #111; }
+.k-logo span { color: #7c3aed; }
+.k-btns { display: flex; gap: 10px; flex-shrink: 0; align-items: center; }
 #btn-play  { width: 68px; height: 68px; border-radius: 50%; background: #7c3aed; color: #fff; border: none; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
 #btn-pause { width: 68px; height: 68px; border-radius: 14px; background: #7c3aed; color: #fff; border: none; font-size: 1.8rem; display: none; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
 #btn-rst   { width: 68px; height: 68px; border-radius: 50%; background: #e8e8e8; color: #333; border: none; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
 #btn-exit  { width: 68px; height: 68px; border-radius: 50%; background: #fee2e2; color: #dc2626; border: none; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
 .k-btns button:active { opacity: 0.75; transform: scale(0.93); }
 
-#lyrics-win { flex: 1; width: 100%; overflow: hidden; position: relative; background: #fff; touch-action: pan-y; }
-#lyrics-box { position: absolute; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 1.1rem; padding: 0 1.5rem; will-change: transform; }
-
-/* LETRA — toda negra, mismo tamaño, sin cambios */
+/* Área de letra */
+#lyrics-win {
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  touch-action: pan-y;
+}
+#lyrics-box {
+  position: absolute;
+  left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 0 1.5rem;
+  will-change: transform;
+}
 .ll {
   font-size: clamp(1.8rem, 5vw, 2.6rem);
   font-weight: 600;
@@ -87,7 +117,15 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   width: 100%;
 }
 
-#k-ftr { padding: 0.8rem 1rem; width: 100%; flex-shrink: 0; border-top: 1.5px solid #eee; background: #fff; }
+/* Footer progreso fijo abajo */
+#k-ftr {
+  padding: 0.8rem 1rem;
+  width: 100%;
+  flex-shrink: 0;
+  border-top: 1.5px solid #eee;
+  background: #fff;
+  z-index: 10;
+}
 #prog-track { width: 100%; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
 #prog-fill { height: 100%; background: #7c3aed; border-radius: 3px; width: 0%; pointer-events: none; transition: width 0.2s linear; }
 .time-row { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.76rem; color: #aaa; }
@@ -137,10 +175,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 
 <div id="screen-karaoke">
   <div id="k-hdr">
-    <div class="k-info">
-      <div class="kt" id="k-title">—</div>
-      <div class="ka" id="k-artist"></div>
-    </div>
+    <div class="k-logo">Karaoke <span>Vic</span></div>
     <div class="k-btns">
       <button id="btn-play">▶</button>
       <button id="btn-pause">⏸</button>
@@ -199,17 +234,8 @@ document.getElementById('btn-exit').addEventListener('click',function(){stopTime
 document.getElementById('prog-track').addEventListener('click',seekFromEvent);
 document.getElementById('prog-track').addEventListener('touchend',function(e){e.preventDefault();seekFromEvent(e.changedTouches[0]);});
 function seekFromEvent(e){if(!lyrics.length)return;var r=document.getElementById('prog-track').getBoundingClientRect();seekK(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*totalMs());}
-
-function setPaused(p){paused=p;document.getElementById('btn-play').style.display=p?'flex':'none';document.getElementById('btn-pause').style.display=p?'flex':'none';
-  document.getElementById('btn-play').style.display=p?'flex':'none';
-  document.getElementById('btn-pause').style.display=p?'flex':'none';
-}
-
-function setPaused(p){
-  paused=p;
-  document.getElementById('btn-play').style.display=p?'flex':'none';
-  document.getElementById('btn-pause').style.display=p?'none':'flex';
-}
+function setPaused(p){paused=p;document.getElementById('btn-play').style.display=p?'flex':'none';document.getElementById('btn-pause').style.display=p?'flex':'none';}
+function setPaused(p){paused=p;document.getElementById('btn-play').style.display=p?'flex':'none';document.getElementById('btn-pause').style.display=p?'none':'flex';}
 
 function startListen(){
   setMsg('idle-msg','');
@@ -301,8 +327,6 @@ function buildPlain(plain){var lines=plain.split('\n').filter(function(l){return
 
 function beginKaraoke(){
   if(!lyrics.length)return;
-  document.getElementById('k-title').textContent=song.title;
-  document.getElementById('k-artist').textContent=song.artist||'';
   buildDOM();show('karaoke');
   currentY=0;targetY=0;manualOffset=0;userScrolling=false;
   applyY(0);
