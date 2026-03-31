@@ -6,27 +6,46 @@
 <title>Karaoke Vic</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #111; overflow: hidden; }
+html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111; overflow: hidden; }
+
+/* Fondo con textura sutil */
+body { background: #f8f7f5; }
+
 .screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh; min-height: 100dvh; padding: 2rem 1.5rem; gap: 1.6rem; }
 .screen.active { display: flex; }
-#screen-idle { background: #f5f5f7; }
+#screen-idle, #screen-listening, #screen-found {
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(124,58,237,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(124,58,237,0.04) 0%, transparent 60%),
+    #f8f7f5;
+}
+
 .logo { font-size: clamp(4rem, 16vw, 9rem); font-weight: 800; letter-spacing: -4px; color: #111; line-height: 1; }
 .logo span { color: #7c3aed; }
-.tagline { font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase; color: #888; text-align: center; }
-#btn-start { width: 100%; max-width: 480px; padding: 1.6rem 2rem; border-radius: 50px; background: #7c3aed; border: none; color: #fff; font-size: 1.5rem; font-weight: 700; cursor: pointer; -webkit-appearance: none; }
-#btn-start:active { background: #6d28d9; }
-.or-line { color: #bbb; font-size: 0.85rem; }
+.tagline { font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase; color: #999; text-align: center; }
+#btn-start { width: 100%; max-width: 480px; padding: 1.5rem 2rem; border-radius: 50px; background: #7c3aed; border: none; color: #fff; font-size: 1.4rem; font-weight: 700; cursor: pointer; -webkit-appearance: none; box-shadow: 0 4px 20px rgba(124,58,237,0.3); }
+#btn-start:active { background: #6d28d9; transform: scale(0.98); }
+.or-line { color: #ccc; font-size: 0.85rem; }
 .search-box { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 10px; }
-.search-box input { width: 100%; padding: 1.1rem 1.2rem; border-radius: 16px; background: #fff; border: 1.5px solid #ddd; color: #111; font-size: 1.1rem; outline: none; -webkit-appearance: none; }
+.search-box input { width: 100%; padding: 1.1rem 1.2rem; border-radius: 16px; background: #fff; border: 1.5px solid #e5e5e5; color: #111; font-size: 1.1rem; outline: none; -webkit-appearance: none; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
 .search-box input::placeholder { color: #bbb; }
-.search-box input:focus { border-color: #7c3aed; }
-.search-hint { font-size: 0.75rem; color: #999; text-align: center; line-height: 1.5; }
-.search-box button { width: 100%; padding: 1.3rem 1.2rem; border-radius: 16px; background: #111; border: none; color: #fff; font-size: 1.3rem; font-weight: 700; cursor: pointer; -webkit-appearance: none; }
+.search-box input:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+.search-hint { font-size: 0.75rem; color: #aaa; text-align: center; line-height: 1.5; }
+.search-box button { width: 100%; padding: 1.2rem 1.2rem; border-radius: 16px; background: #111; border: none; color: #fff; font-size: 1.2rem; font-weight: 700; cursor: pointer; -webkit-appearance: none; }
 .search-box button:active { background: #333; }
 .msg { font-size: 0.88rem; color: #e53e3e; text-align: center; min-height: 1.1em; line-height: 1.5; max-width: 380px; }
 .msg.ok { color: #38a169; }
 .msg.info { color: #7c3aed; }
-#screen-listening { background: #f5f5f7; }
+
+/* Results list */
+#results-list { width: 100%; max-height: 200px; overflow-y: auto; background: #fff; border: 1.5px solid #e5e5e5; border-radius: 16px; display: none; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.result-item { padding: 0.8rem 1rem; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
+.result-item:last-child { border-bottom: none; }
+.result-item:active { background: #f9f8ff; }
+.result-title { font-weight: 700; font-size: 0.95rem; color: #111; }
+.result-artist { font-size: 0.8rem; color: #888; margin-top: 2px; }
+
+#screen-listening { }
 .pulse-wrap { position: relative; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .pr { position: absolute; border-radius: 50%; border: 2px solid rgba(124,58,237,0.3); animation: pr 2s ease-in-out infinite; }
 .pr1 { width: 150px; height: 150px; }
@@ -40,85 +59,100 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 .listen-lbl { font-size: 1.1rem; color: #555; text-align: center; line-height: 1.9; }
 .listen-lbl b { color: #7c3aed; font-weight: 600; }
 .timer-arc { font-size: 2.5rem; font-weight: 800; color: #7c3aed; }
-#btn-cancel { padding: 0.7rem 2.2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ccc; color: #888; cursor: pointer; font-size: 0.95rem; -webkit-appearance: none; }
-#screen-found { background: #f5f5f7; }
-.badge-ok { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: #7c3aed; padding: 0.3rem 1.1rem; border-radius: 50px; border: 1px solid rgba(124,58,237,0.3); background: rgba(124,58,237,0.08); }
-#found-title { font-size: clamp(1.7rem, 6vw, 2.6rem); font-weight: 700; text-align: center; max-width: 480px; line-height: 1.2; color: #111; }
+#btn-cancel { padding: 0.7rem 2.2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ddd; color: #999; cursor: pointer; font-size: 0.95rem; -webkit-appearance: none; }
+
+.badge-ok { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: #7c3aed; padding: 0.3rem 1.1rem; border-radius: 50px; border: 1px solid rgba(124,58,237,0.3); background: rgba(124,58,237,0.07); }
+#found-title { font-size: clamp(1.7rem, 6vw, 2.6rem); font-weight: 800; text-align: center; max-width: 480px; line-height: 1.2; color: #111; }
 #found-artist { font-size: 1.1rem; color: #666; }
 .loading-lyrics { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; }
 .spinner { width: 36px; height: 36px; border: 3px solid #eee; border-top-color: #7c3aed; border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-txt { font-size: 0.9rem; color: #7c3aed; }
 .found-btns { display: flex; gap: 12px; margin-top: 0.4rem; flex-wrap: wrap; justify-content: center; }
-.btn-p { padding: 0.95rem 2.4rem; border-radius: 50px; background: #7c3aed; border: none; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; -webkit-appearance: none; }
+.btn-p { padding: 0.95rem 2.4rem; border-radius: 50px; background: #7c3aed; border: none; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; -webkit-appearance: none; box-shadow: 0 4px 16px rgba(124,58,237,0.25); }
 .btn-p:active { background: #6d28d9; }
-.btn-s { padding: 0.95rem 2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ccc; color: #555; font-size: 1rem; cursor: pointer; -webkit-appearance: none; }
-.btn-s:active { background: #eee; }
+.btn-s { padding: 0.95rem 2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ddd; color: #666; font-size: 1rem; cursor: pointer; -webkit-appearance: none; }
+.btn-s:active { background: #f5f5f5; }
 
-/* KARAOKE */
-#screen-karaoke { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; flex-direction: column; }
+/* ── KARAOKE ── */
+#screen-karaoke { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; flex-direction: column;
+  background:
+    radial-gradient(ellipse at 0% 100%, rgba(124,58,237,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(124,58,237,0.04) 0%, transparent 50%),
+    #fafaf9;
+}
 #screen-karaoke.active { display: flex; }
 
+/* Header elegante */
 #k-hdr {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 10px;
-  padding: 0.6rem 1rem;
+  gap: 12px;
+  padding: 0.7rem 1.2rem;
   width: 100%;
   flex-shrink: 0;
-  border-bottom: 1.5px solid #eee;
-  background: #fff;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,0,0,0.07);
   z-index: 10;
 }
-.k-logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; color: #111; white-space: nowrap; }
+.k-logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -1px; color: #111; white-space: nowrap; }
 .k-logo span { color: #7c3aed; }
-.k-song { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; }
-.k-song .kt { font-size: 1.15rem; font-weight: 800; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
-.k-song .ka { font-size: 0.9rem; color: #666; font-weight: 500; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
+.k-song { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+.k-song .kt { font-size: 1.1rem; font-weight: 800; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
+.k-song .ka { font-size: 0.85rem; color: #888; font-weight: 500; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
 
-/* Todos los botones: mismo tamaño, mismo border-radius, solo varía fondo */
-.k-btns { display: flex; gap: 6px; align-items: center; }
+/* Grupo de botones */
+.k-btns { display: flex; gap: 5px; align-items: center; }
+
+/* Base de todos los botones — pill suave */
 .k-btns button {
-  width: 50px; height: 50px;
-  border-radius: 14px;
+  height: 44px; min-width: 44px; padding: 0 14px;
+  border-radius: 22px;
   border: none;
-  font-size: 1.3rem;
+  font-size: 1.1rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; -webkit-appearance: none;
-  font-weight: 700;
   color: #fff;
+  letter-spacing: 0;
   transition: opacity 0.1s, transform 0.1s;
 }
-.k-btns button:active { opacity: 0.75; transform: scale(0.93); }
+.k-btns button:active { opacity: 0.72; transform: scale(0.95); }
 
-#btn-play   { background: #16a34a; display: flex; }
-#btn-pause  { background: #7c3aed; display: none; }
-#btn-slower { background: #d97706; font-size: 1.1rem; }
-#btn-faster { background: #2563eb; font-size: 1.1rem; }
-#btn-rst    { background: #6b7280; }
-#btn-exit   { background: #dc2626; }
+#btn-play   { background: #16a34a; width: 44px; }
+#btn-pause  { background: #7c3aed; width: 44px; display: none; }
+#btn-slower { background: #d97706; width: 44px; font-size: 1.3rem; }
+#btn-faster { background: #2563eb; width: 44px; font-size: 1.3rem; }
+#btn-rst    { background: #64748b; width: 44px; }
+#btn-exit   { background: #dc2626; width: 44px; }
 
-/* Velocidad badge — mismo alto que botones, estilo coherente */
+/* Badge velocidad integrado */
 #speed-badge {
-  height: 50px; min-width: 50px; padding: 0 10px;
-  border-radius: 14px;
-  background: #f3f4f6;
-  border: 1.5px solid #e5e7eb;
-  font-size: 0.85rem; font-weight: 800;
-  color: #374151;
+  height: 44px; min-width: 44px; padding: 0 10px;
+  border-radius: 22px;
+  background: rgba(0,0,0,0.06);
+  font-size: 0.82rem; font-weight: 800; color: #555;
   display: flex; align-items: center; justify-content: center;
-  white-space: nowrap;
+  white-space: nowrap; letter-spacing: -0.3px;
 }
 
-#lyrics-win { flex: 1; width: 100%; overflow: hidden; position: relative; background: #fff; touch-action: pan-y; }
-#lyrics-box { position: absolute; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 1.1rem; padding: 0 1.5rem; will-change: transform; }
+/* Área letra */
+#lyrics-win { flex: 1; width: 100%; overflow: hidden; position: relative; touch-action: pan-y; background: transparent; }
+#lyrics-box { position: absolute; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 0 1.5rem; will-change: transform; }
 .ll { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 600; text-align: center; color: #111; line-height: 1.4; padding: 0.1rem 0.5rem; cursor: pointer; user-select: none; width: 100%; }
 
-#k-ftr { padding: 0.7rem 1rem; width: 100%; flex-shrink: 0; border-top: 1.5px solid #eee; background: #fff; z-index: 10; }
-#prog-track { width: 100%; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
+/* Footer */
+#k-ftr {
+  padding: 0.65rem 1.2rem; width: 100%; flex-shrink: 0;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0,0,0,0.07); z-index: 10;
+}
+#prog-track { width: 100%; height: 5px; background: rgba(0,0,0,0.08); border-radius: 3px; cursor: pointer; touch-action: none; }
 #prog-fill { height: 100%; background: #7c3aed; border-radius: 3px; width: 0%; pointer-events: none; transition: width 0.2s linear; }
-.time-row { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.76rem; color: #aaa; }
+.time-row { display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.74rem; color: #aaa; }
 </style>
 </head>
 <body>
@@ -129,8 +163,9 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   <button id="btn-start">🎤 Escuchar la canción</button>
   <div class="or-line">— o busca por título o artista —</div>
   <div class="search-box">
-    <input id="manual-input" type="text" placeholder='ej: "Corazón partío" o "Alejandro Sanz"' autocomplete="off" autocorrect="off" spellcheck="false" />
+    <input id="manual-input" type="text" placeholder='ej: "No dudaría" o "Antonio Flores"' autocomplete="off" autocorrect="off" spellcheck="false" />
     <div class="search-hint">Escribe el título o el artista</div>
+    <div id="results-list"></div>
     <button id="btn-manual">🔍 Buscar</button>
   </div>
   <p id="idle-msg" class="msg"></p>
@@ -203,15 +238,23 @@ function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el
 function applyY(y){document.getElementById('lyrics-box').style.transform='translateY('+y+'px)';}
 function getSpeed(){return SPEED_STEPS[speedIdx];}
 function updateSpeedBadge(){var s=getSpeed();document.getElementById('speed-badge').textContent=(s===1?'1':s)+'×';}
+function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
 
-function itemScore(item){
-  var t=item.trackName||'',a=item.artistName||'',s=0;
-  if(/\(/.test(t))s+=20;if(/\[/.test(t))s+=20;
-  if(/feat\.|ft\./i.test(t))s+=15;if(/feat\.|ft\./i.test(a))s+=15;
-  if(/live|directo/i.test(t))s+=30;if(/acoustic|acustic/i.test(t))s+=25;
-  if(/remaster/i.test(t))s+=20;if(/remix/i.test(t))s+=25;
-  if(/radio.?edit/i.test(t))s+=20;if(/maqueta|demo/i.test(t))s+=25;
-  if(/versión|version/i.test(t))s+=15;if(!item.syncedLyrics)s+=5;
+// Puntuación: menor = más original/principal
+function itemScore(item, queryArtist){
+  var t=item.trackName||'', a=item.artistName||'', s=0;
+  // Penalizar versiones secundarias
+  if(/\(/.test(t))s+=20; if(/\[/.test(t))s+=20;
+  if(/feat\.|ft\./i.test(t))s+=15; if(/feat\.|ft\./i.test(a))s+=15;
+  if(/live|en directo/i.test(t))s+=30;
+  if(/acoustic|acustic/i.test(t))s+=25;
+  if(/remaster/i.test(t))s+=20; if(/remix/i.test(t))s+=25;
+  if(/radio.?edit/i.test(t))s+=20; if(/maqueta|demo/i.test(t))s+=25;
+  if(/versión|version/i.test(t))s+=15;
+  // Si la búsqueda incluye artista y coincide, premiar mucho
+  if(queryArtist && norm(a).indexOf(norm(queryArtist))!==-1) s-=40;
+  // Premiar letra sincronizada
+  if(!item.syncedLyrics)s+=5;
   return s;
 }
 
@@ -226,6 +269,7 @@ document.getElementById('btn-start').addEventListener('click',startListen);
 document.getElementById('btn-cancel').addEventListener('click',function(){cancelListen();show('idle');});
 document.getElementById('btn-manual').addEventListener('click',manualSearch);
 document.getElementById('manual-input').addEventListener('keydown',function(e){if(e.key==='Enter'){e.target.blur();manualSearch();}});
+document.getElementById('manual-input').addEventListener('input',function(){document.getElementById('results-list').style.display='none';document.getElementById('results-list').innerHTML='';});
 document.getElementById('btn-back').addEventListener('click',function(){show('idle');});
 document.getElementById('btn-go').addEventListener('click',beginKaraoke);
 document.getElementById('btn-play').addEventListener('click',function(){if(paused){kStart=performance.now()-pausedAt;setPaused(false);}});
@@ -275,27 +319,86 @@ function recognizeAudio(stream){
   fetch('https://api.audd.io/',{method:'POST',body:form})
     .then(function(r){return r.json();})
     .then(function(data){
-      if(data.status==='success'&&data.result){song={title:data.result.title,artist:data.result.artist};showFoundAndLoad(song.title,song.artist,null);}
-      else{setMsg('listen-msg','No reconocida. Busca manualmente.','msg');setTimeout(function(){show('idle');},3000);}
+      if(data.status==='success'&&data.result){
+        song={title:data.result.title,artist:data.result.artist};
+        showFoundAndLoad(song.title,song.artist,null);
+      }else{
+        setMsg('listen-msg','No reconocida. Busca manualmente.','msg');
+        setTimeout(function(){show('idle');},3000);
+      }
     })
     .catch(function(){setMsg('listen-msg','⚠️ Error de red.','msg');setTimeout(function(){show('idle');},3000);});
 }
+
 function manualSearch(){
   var val=document.getElementById('manual-input').value.trim();
   if(!val){setMsg('idle-msg','Escribe algo para buscar.');return;}
   setMsg('idle-msg','Buscando…','info');
+  document.getElementById('results-list').style.display='none';
+
+  // Separar título y artista si el usuario escribe "canción - artista" o "canción · artista"
+  var parts=val.split(/\s*[·\-]\s*/);
+  var queryTitle=parts[0]||val;
+  var queryArtist=parts[1]||'';
+
   fetch('https://lrclib.net/api/search?q='+encodeURIComponent(val),{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
     .then(function(r){return r.ok?r.json():[];})
     .then(function(arr){
       if(!arr||arr.length===0){setMsg('idle-msg','No encontrado. Prueba con el título exacto.');return;}
       setMsg('idle-msg','');
-      arr.sort(function(a,b){return itemScore(a)-itemScore(b);});
+
+      // Ordenar por score (menor = mejor)
+      arr.sort(function(a,b){return itemScore(a,queryArtist)-itemScore(b,queryArtist);});
+
       var best=arr[0];
-      song={title:best.trackName||'Desconocido',artist:best.artistName||''};
-      showFoundAndLoad(song.title,song.artist,best.id);
+      var second=arr[1];
+
+      // Si el mejor y el segundo tienen artistas muy distintos Y títulos parecidos → preguntar
+      var bestScore=itemScore(best,queryArtist);
+      var secondScore=second?itemScore(second,queryArtist):999;
+      var diff=secondScore-bestScore;
+
+      if(diff<8 && second && norm(best.trackName||'')===norm(second.trackName||'') && norm(best.artistName||'')!==norm(second.artistName||'')){
+        // Hay duda real entre artistas distintos para la misma canción
+        showResultsList(arr.slice(0,5),queryArtist);
+      } else {
+        selectResult(best);
+      }
     })
     .catch(function(){setMsg('idle-msg','⚠️ Error de red.');});
 }
+
+function showResultsList(arr,queryArtist){
+  // Deduplicar por título+artista limpios
+  var seen={};
+  var deduped=[];
+  arr.forEach(function(item){
+    var key=norm(item.trackName||'')+'||'+norm(item.artistName||'');
+    if(!seen[key]){seen[key]=true;deduped.push(item);}
+  });
+  if(deduped.length===1){selectResult(deduped[0]);return;}
+
+  var list=document.getElementById('results-list');
+  list.innerHTML='';
+  deduped.forEach(function(item){
+    var div=document.createElement('div');div.className='result-item';
+    var t=document.createElement('div');t.className='result-title';t.textContent=item.trackName||'—';
+    var a=document.createElement('div');a.className='result-artist';a.textContent=item.artistName||'';
+    div.appendChild(t);div.appendChild(a);
+    div.addEventListener('click',function(){selectResult(item);list.style.display='none';});
+    list.appendChild(div);
+  });
+  list.style.display='block';
+  setMsg('idle-msg','Varias versiones — elige la correcta:','info');
+}
+
+function selectResult(item){
+  song={title:item.trackName||'Desconocido',artist:item.artistName||''};
+  document.getElementById('results-list').style.display='none';
+  setMsg('idle-msg','');
+  showFoundAndLoad(song.title,song.artist,item.id);
+}
+
 function showFoundAndLoad(title,artist,lrcId){
   document.getElementById('found-title').textContent=title;
   document.getElementById('found-artist').textContent=artist||'';
@@ -310,6 +413,7 @@ function showFoundAndLoad(title,artist,lrcId){
     })
     .catch(function(){document.getElementById('loading-lyrics').style.display='none';setMsg('found-msg','⚠️ Error de red.');document.getElementById('found-btns').style.display='flex';});
 }
+
 function fetchLyrics(lrcId){
   var url=lrcId?'https://lrclib.net/api/get/'+lrcId:'https://lrclib.net/api/search?q='+encodeURIComponent((song.title||'')+' '+(song.artist||''));
   return fetch(url,{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
@@ -318,7 +422,7 @@ function fetchLyrics(lrcId){
       if(!d)return null;
       if(lrcId){if(d.syncedLyrics)return parseLRC(d.syncedLyrics);if(d.plainLyrics)return buildPlain(d.plainLyrics);return null;}
       var arr=Array.isArray(d)?d:[];
-      arr.sort(function(a,b){return itemScore(a)-itemScore(b);});
+      arr.sort(function(a,b){return itemScore(a,song.artist)-itemScore(b,song.artist);});
       for(var i=0;i<arr.length;i++){if(arr[i].syncedLyrics)return parseLRC(arr[i].syncedLyrics);}
       for(var j=0;j<arr.length;j++){if(arr[j].plainLyrics)return buildPlain(arr[j].plainLyrics);}
       return null;
