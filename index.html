@@ -71,9 +71,9 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 .k-btns #btn-exit { background: #fee2e2; color: #dc2626; }
 #lyrics-win { flex: 1; width: 100%; background: #fff; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1.5rem 1.5rem; scroll-behavior: smooth; }
 #lyrics-box { display: flex; flex-direction: column; align-items: center; gap: 1rem; width: 100%; max-width: 860px; margin: 0 auto; padding-bottom: 40vh; }
-.ll { font-size: clamp(1.6rem, 4.5vw, 2.4rem); font-weight: 600; text-align: center; color: #111; line-height: 1.3; padding: 0.1rem 0.5rem; cursor: pointer; user-select: none; width: 100%; opacity: 0.25; transition: opacity 0.35s; }
-.ll.past { opacity: 0.25; }
-.ll.next { opacity: 0.5; }
+.ll { font-size: clamp(1.6rem, 4.5vw, 2.4rem); font-weight: 600; text-align: center; color: #111; line-height: 1.3; padding: 0.1rem 0.5rem; cursor: pointer; user-select: none; width: 100%; opacity: 0.22; transition: opacity 0.35s; }
+.ll.past { opacity: 0.22; }
+.ll.next { opacity: 0.55; }
 .ll.active { opacity: 1; }
 #k-ftr { padding: 0.9rem 1.2rem; width: 100%; flex-shrink: 0; border-top: 1.5px solid #eee; background: #fff; }
 #prog-track { width: 100%; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
@@ -87,10 +87,10 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   <div class="logo">kara<span>ok</span>e</div>
   <div class="tagline">canta con tus amigos</div>
   <button id="btn-start">🎤 Escuchar la canción</button>
-  <div class="or-line">— o busca por título, artista o letra —</div>
+  <div class="or-line">— o busca por título o artista —</div>
   <div class="search-box">
-    <input id="manual-input" type="text" placeholder='ej: "no puedo vivir sin ti"' autocomplete="off" autocorrect="off" spellcheck="false" />
-    <div class="search-hint">Título, artista o cualquier frase de la canción</div>
+    <input id="manual-input" type="text" placeholder='ej: "Corazón partío" o "Alejandro Sanz"' autocomplete="off" autocorrect="off" spellcheck="false" />
+    <div class="search-hint">Escribe el título o el artista</div>
     <div id="results-list"></div>
     <button id="btn-manual">🔍 Buscar</button>
   </div>
@@ -151,6 +151,7 @@ var autoScrollEnabled=true;
 
 function show(n){['idle','listening','found','karaoke'].forEach(function(id){document.getElementById('screen-'+id).classList.toggle('active',id===n);});}
 function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el.textContent=text;el.className='msg'+(cls?' '+cls:'');}
+function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
 
 (function(){var wf=document.getElementById('waveform');for(var i=0;i<22;i++){var b=document.createElement('div');b.className='bar';b.style.animationDelay=(i*0.05)+'s';wf.appendChild(b);}})();
 
@@ -230,53 +231,63 @@ function recognizeAudio(stream){
     .catch(function(){setMsg('listen-msg','⚠️ Error de red.','msg');setTimeout(function(){show('idle');},3000);});
 }
 
+// Quitar paréntesis, corchetes y sufijos tipo "- Live", "- Remaster"
+function cleanTitle(t){
+  return (t||'').replace(/\s*[\(\[].*?[\)\]]/g,'').replace(/\s*[-–]\s*(live|acoustic|remaster|version|versión|remix|radio edit|single|demo|maqueta).*/i,'').trim();
+}
+
+// Puntuar un resultado — menor es mejor
+function scoreItem(item, qn){
+  var tn = norm(cleanTitle(item.trackName||''));
+  var score = 0;
+  // Penalizar versiones secundarias en el título original
+  var raw = norm(item.trackName||'');
+  if(/\(|\[|-\s*(live|acoustic|remaster|versión|version|remix|maqueta|ikea)/i.test(item.trackName||'')) score += 10;
+  // Premiar coincidencia exacta con la query
+  if(tn === qn) score -= 5;
+  // Premiar si tiene letra sincronizada
+  if(item.syncedLyrics) score -= 3;
+  return score;
+}
+
 function manualSearch(){
   var val=document.getElementById('manual-input').value.trim();
   if(!val){setMsg('idle-msg','Escribe algo para buscar.');return;}
   if(selectedLrcId){setMsg('idle-msg','');showFoundAndLoad(song.title,song.artist,selectedLrcId);return;}
   setMsg('idle-msg','Buscando…','info');
   document.getElementById('results-list').style.display='none';
+
   fetch('https://lrclib.net/api/search?q='+encodeURIComponent(val),{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
     .then(function(r){return r.ok?r.json():[];})
     .then(function(arr){
-      if(!arr||arr.length===0){setMsg('idle-msg','No encontrado. Prueba con otras palabras.');return;}
+      if(!arr||arr.length===0){setMsg('idle-msg','No encontrado. Prueba con el título exacto.');return;}
       setMsg('idle-msg','');
-      // Elegir automáticamente el mejor resultado
-      var best=pickBest(arr,val);
-      if(best){
+      var qn=norm(cleanTitle(val));
+
+      // Agrupar por título+artista limpios y quedarse con el mejor de cada grupo
+      var groups={};
+      arr.forEach(function(item){
+        var key=norm(cleanTitle(item.trackName||''))+'||'+norm(item.artistName||'');
+        if(!groups[key]||scoreItem(item,qn)<scoreItem(groups[key],qn)){
+          groups[key]=item;
+        }
+      });
+      var deduped=Object.values(groups);
+
+      // Ordenar por score
+      deduped.sort(function(a,b){return scoreItem(a,qn)-scoreItem(b,qn);});
+
+      // Si el mejor resultado coincide claramente, elegirlo solo
+      var best=deduped[0];
+      var bestTitle=norm(cleanTitle(best.trackName||''));
+      if(bestTitle===qn || deduped.length===1){
         selectResult(best);
       } else {
-        showResults(arr.slice(0,6));
+        // Mostrar máximo 4 opciones deduplicadas
+        showResults(deduped.slice(0,4));
       }
     })
     .catch(function(){setMsg('idle-msg','⚠️ Error de red.');});
-}
-
-// Elige automáticamente si hay un resultado claramente dominante
-function pickBest(arr,query){
-  var q=query.toLowerCase().trim();
-  // Buscar coincidencia exacta de título (ignorando acentos y mayúsculas)
-  function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
-  var qn=norm(q);
-  // Primero: coincidencia exacta de título sin (remix/maqueta/live...)
-  var exact=arr.filter(function(item){
-    var tn=norm(item.trackName||'');
-    return tn===qn && item.syncedLyrics;
-  });
-  if(exact.length===1)return exact[0];
-  if(exact.length>1)return exact[0]; // devolver el primero (más popular en LRCLIB)
-
-  // Segundo: título normalizado coincide aunque no sea exacto
-  var close=arr.filter(function(item){
-    var tn=norm(item.trackName||'');
-    return tn===qn;
-  });
-  if(close.length>=1)return close[0];
-
-  // Tercero: si solo hay 1 resultado, elegirlo
-  if(arr.length===1)return arr[0];
-
-  return null; // mostrar lista
 }
 
 function showResults(arr){
@@ -311,17 +322,16 @@ function showFoundAndLoad(title,artist,lrcId){
     .then(function(result){
       document.getElementById('loading-lyrics').style.display='none';
       if(!result||result.length===0){
-        setMsg('found-msg','⚠️ No se encontró letra. Prueba con otro formato.');
+        setMsg('found-msg','⚠️ No se encontró letra. Prueba escribiendo el título exacto.');
         document.getElementById('found-btns').style.display='flex';
         return;
       }
       lyrics=result;
-      // Arrancar automáticamente
       beginKaraoke();
     })
     .catch(function(){
       document.getElementById('loading-lyrics').style.display='none';
-      setMsg('found-msg','⚠️ Error de red buscando letra.');
+      setMsg('found-msg','⚠️ Error de red.');
       document.getElementById('found-btns').style.display='flex';
     });
 }
