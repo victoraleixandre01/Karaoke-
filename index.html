@@ -54,7 +54,10 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 .btn-p:active { background: #6d28d9; }
 .btn-s { padding: 0.95rem 2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ccc; color: #555; font-size: 1rem; cursor: pointer; -webkit-appearance: none; }
 .btn-s:active { background: #eee; }
-#screen-karaoke { justify-content: flex-start; padding: 0; gap: 0; min-height: 100vh; min-height: 100dvh; background: #fff; }
+
+/* KARAOKE — scroll via transform en lugar de scrollTop */
+#screen-karaoke { justify-content: flex-start; padding: 0; gap: 0; height: 100vh; height: 100dvh; background: #fff; display: none; flex-direction: column; }
+#screen-karaoke.active { display: flex; }
 #k-hdr { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; width: 100%; flex-shrink: 0; border-bottom: 1.5px solid #eee; background: #fff; }
 .k-info { min-width: 0; flex: 1; padding-right: 8px; }
 .k-info .kt { font-size: 0.95rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #111; }
@@ -65,13 +68,46 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 #btn-pause { background: #7c3aed; color: #fff; display: none; }
 #btn-rst   { background: #e8e8e8; color: #333; }
 #btn-exit  { background: #fee2e2; color: #dc2626; }
-.k-btns button:active { opacity: 0.75; transform: scale(0.95); }
-#lyrics-win { flex: 1; width: 100%; overflow-y: scroll; -webkit-overflow-scrolling: touch; background: #fff; }
-#lyrics-box { display: flex; flex-direction: column; align-items: center; gap: 0.85rem; width: 100%; max-width: 860px; margin: 0 auto; padding: 45vh 1.5rem 45vh; }
-.ll { font-size: clamp(1.5rem, 4vw, 2.1rem); font-weight: 500; text-align: center; color: #111; line-height: 1.35; padding: 0.1rem 0.5rem; cursor: pointer; user-select: none; width: 100%; transition: opacity 0.3s; opacity: 0.3; }
-.ll.past  { opacity: 0.3; }
-.ll.next  { opacity: 0.65; }
+.k-btns button:active { opacity: 0.75; }
+
+/* Ventana de letra — overflow hidden, movemos el contenido con transform */
+#lyrics-win {
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  touch-action: pan-y;
+}
+#lyrics-box {
+  position: absolute;
+  left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0 1.5rem;
+  will-change: transform;
+}
+
+/* LETRA — negra, opacidad para las no activas */
+.ll {
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  font-weight: 500;
+  text-align: center;
+  color: #111;
+  line-height: 1.35;
+  padding: 0.1rem 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+  opacity: 0.25;
+  transition: opacity 0.3s, font-weight 0.3s;
+}
+.ll.past  { opacity: 0.25; }
+.ll.next  { opacity: 0.6; }
 .ll.active { opacity: 1; font-weight: 800; }
+
 #k-ftr { padding: 0.8rem 1rem; width: 100%; flex-shrink: 0; border-top: 1.5px solid #eee; background: #fff; }
 #prog-track { width: 100%; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
 #prog-fill { height: 100%; background: #7c3aed; border-radius: 3px; width: 0%; pointer-events: none; transition: width 0.2s linear; }
@@ -79,6 +115,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 </style>
 </head>
 <body>
+
 <div id="screen-idle" class="screen active">
   <div class="logo">Karaoke <span>Vic</span></div>
   <div class="tagline">canta con tus amigos</div>
@@ -91,6 +128,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   </div>
   <p id="idle-msg" class="msg"></p>
 </div>
+
 <div id="screen-listening" class="screen">
   <div class="pulse-wrap">
     <div class="pr pr1"></div><div class="pr pr2"></div><div class="pr pr3"></div>
@@ -102,6 +140,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   <button id="btn-cancel">Cancelar</button>
   <p id="listen-msg" class="msg info"></p>
 </div>
+
 <div id="screen-found" class="screen">
   <div class="badge-ok">Canción encontrada ✓</div>
   <div id="found-title">—</div>
@@ -116,7 +155,8 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   </div>
   <p id="found-msg" class="msg"></p>
 </div>
-<div id="screen-karaoke" class="screen">
+
+<div id="screen-karaoke">
   <div id="k-hdr">
     <div class="k-info">
       <div class="kt" id="k-title">—</div>
@@ -135,12 +175,21 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
     <div class="time-row"><span id="t-cur">0:00</span><span id="t-tot">0:00</span></div>
   </div>
 </div>
+
 <script>
 'use strict';
 var song=null,lyrics=[],kTimer=null,kStart=0,paused=false,pausedAt=0;
-var mediaRec=null,chunks=[],cntTmr=null,autoScrollEnabled=true;
-function show(n){['idle','listening','found','karaoke'].forEach(function(id){document.getElementById('screen-'+id).classList.toggle('active',id===n);});}
+var mediaRec=null,chunks=[],cntTmr=null;
+var currentTranslateY=0, targetTranslateY=0, manualOffset=0, userScrolling=false;
+
+function show(n){
+  ['idle','listening','found'].forEach(function(id){
+    document.getElementById('screen-'+id).classList.toggle('active',id===n);
+  });
+  document.getElementById('screen-karaoke').classList.toggle('active',n==='karaoke');
+}
 function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el.textContent=text;el.className='msg'+(cls?' '+cls:'');}
+
 function itemScore(item){
   var t=item.trackName||'',a=item.artistName||'',s=0;
   if(/\(/.test(t))s+=20; if(/\[/.test(t))s+=20;
@@ -151,8 +200,31 @@ function itemScore(item){
   if(/versión|version/i.test(t))s+=15; if(!item.syncedLyrics)s+=5;
   return s;
 }
+
 (function(){var wf=document.getElementById('waveform');for(var i=0;i<22;i++){var b=document.createElement('div');b.className='bar';b.style.animationDelay=(i*0.05)+'s';wf.appendChild(b);}})();
-document.getElementById('lyrics-win').addEventListener('touchstart',function(){autoScrollEnabled=false;clearTimeout(window._sr);window._sr=setTimeout(function(){autoScrollEnabled=true;},4000);},{passive:true});
+
+// Scroll manual con touch
+var touchStartY=0;
+document.getElementById('lyrics-win').addEventListener('touchstart',function(e){
+  touchStartY=e.touches[0].clientY;
+  userScrolling=true;
+  clearTimeout(window._sr);
+},{passive:true});
+document.getElementById('lyrics-win').addEventListener('touchmove',function(e){
+  var dy=e.touches[0].clientY-touchStartY;
+  touchStartY=e.touches[0].clientY;
+  manualOffset+=dy;
+  applyTransform(currentTranslateY+manualOffset);
+},{passive:true});
+document.getElementById('lyrics-win').addEventListener('touchend',function(){
+  clearTimeout(window._sr);
+  window._sr=setTimeout(function(){userScrolling=false;manualOffset=0;},3000);
+});
+
+function applyTransform(y){
+  document.getElementById('lyrics-box').style.transform='translateY('+y+'px)';
+}
+
 document.getElementById('btn-start').addEventListener('click',startListen);
 document.getElementById('btn-cancel').addEventListener('click',function(){cancelListen();show('idle');});
 document.getElementById('btn-manual').addEventListener('click',manualSearch);
@@ -166,7 +238,9 @@ document.getElementById('btn-exit').addEventListener('click',function(){stopTime
 document.getElementById('prog-track').addEventListener('click',seekFromEvent);
 document.getElementById('prog-track').addEventListener('touchend',function(e){e.preventDefault();seekFromEvent(e.changedTouches[0]);});
 function seekFromEvent(e){if(!lyrics.length)return;var r=document.getElementById('prog-track').getBoundingClientRect();seekK(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*totalMs());}
+
 function setPaused(p){paused=p;document.getElementById('btn-play').style.display=p?'flex':'none';document.getElementById('btn-pause').style.display=p?'none':'flex';}
+
 function startListen(){
   setMsg('idle-msg','');
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setMsg('idle-msg','⚠️ Usa Safari (iOS) o Chrome (Android).');return;}
@@ -254,31 +328,53 @@ function fetchLyrics(lrcId){
 }
 function parseLRC(lrc){var result=[];lrc.split('\n').forEach(function(line){var m=line.match(/\[(\d+):(\d+\.\d+)\](.*)/);if(m){var ms=(parseInt(m[1])*60+parseFloat(m[2]))*1000;var text=m[3].trim();if(text)result.push({time:ms,text:text});}});return result;}
 function buildPlain(plain){var lines=plain.split('\n').filter(function(l){return l.trim();});var dur=lines.length*3600;return lines.map(function(text,i){return{time:i*(dur/lines.length),text:text};});}
+
 function beginKaraoke(){
   if(!lyrics.length)return;
   document.getElementById('k-title').textContent=song.title;
   document.getElementById('k-artist').textContent=song.artist||'';
-  buildDOM();show('karaoke');autoScrollEnabled=true;
+  buildDOM();show('karaoke');
+  currentTranslateY=0;targetTranslateY=0;manualOffset=0;userScrolling=false;
+  applyTransform(0);
   kStart=performance.now();pausedAt=0;setPaused(false);
   stopTimer();kTimer=setInterval(tick,80);
 }
 function buildDOM(){
   var c=document.getElementById('lyrics-box');c.innerHTML='';
+  // Padding top = mitad de la ventana para que la primera línea arranque centrada
+  var win=document.getElementById('lyrics-win');
+  var pad=Math.floor(win.clientHeight/2);
+  c.style.top=pad+'px';
   lyrics.forEach(function(line){
     var el=document.createElement('div');el.className='ll';el.textContent=line.text;
-    var t=line.time;el.addEventListener('click',function(){autoScrollEnabled=true;seekK(t);});
+    var t=line.time;el.addEventListener('click',function(){userScrolling=false;manualOffset=0;seekK(t);});
     c.appendChild(el);
   });
+  // Padding bottom
+  var pb=document.createElement('div');pb.style.height=pad+'px';c.appendChild(pb);
 }
 function tick(){if(paused)return;updateAt(performance.now()-kStart);}
 function updateAt(ms){
-  var lines=document.querySelectorAll('.ll');var active=-1;
+  var lines=document.querySelectorAll('.ll');
+  var active=-1;
   for(var i=lyrics.length-1;i>=0;i--){if(ms>=lyrics[i].time){active=i;break;}}
   lines.forEach(function(el,i){el.classList.remove('active','past','next');if(i<active)el.classList.add('past');else if(i===active)el.classList.add('active');else if(i===active+1)el.classList.add('next');});
-  if(autoScrollEnabled&&active>=0&&lines[active]){
-    var win=document.getElementById('lyrics-win');var lel=lines[active];
-    win.scrollTop=lel.offsetTop-(win.clientHeight/2)+(lel.offsetHeight/2);
+
+  // Auto-scroll: mover el lyrics-box para centrar la línea activa
+  if(!userScrolling&&active>=0&&lines[active]){
+    var win=document.getElementById('lyrics-win');
+    var lel=lines[active];
+    // offsetTop del elemento relativo al lyrics-box
+    var elTop=lel.offsetTop;
+    var elH=lel.offsetHeight;
+    var winH=win.clientHeight;
+    // Queremos que el centro del elemento quede en el centro de la ventana
+    targetTranslateY=-(elTop - winH/2 + elH/2);
+    // Transición suave manual
+    currentTranslateY+=(targetTranslateY-currentTranslateY)*0.12;
+    applyTransform(currentTranslateY);
   }
+
   var total=totalMs();
   document.getElementById('prog-fill').style.width=Math.min(100,(ms/total)*100)+'%';
   document.getElementById('t-cur').textContent=fmt(ms);
@@ -287,8 +383,8 @@ function updateAt(ms){
 function totalMs(){return lyrics.length?lyrics[lyrics.length-1].time+5000:1;}
 function fmt(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function stopTimer(){if(kTimer){clearInterval(kTimer);kTimer=null;}}
-function restartK(){autoScrollEnabled=true;kStart=performance.now();pausedAt=0;setPaused(false);document.getElementById('lyrics-win').scrollTop=0;updateAt(0);}
-function seekK(ms){kStart=performance.now()-ms;pausedAt=ms;autoScrollEnabled=true;updateAt(ms);}
+function restartK(){userScrolling=false;manualOffset=0;currentTranslateY=0;targetTranslateY=0;applyTransform(0);kStart=performance.now();pausedAt=0;setPaused(false);updateAt(0);}
+function seekK(ms){kStart=performance.now()-ms;pausedAt=ms;updateAt(ms);}
 </script>
 </body>
 </html>
