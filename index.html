@@ -59,12 +59,11 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 #screen-karaoke { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; flex-direction: column; }
 #screen-karaoke.active { display: flex; }
 
-/* Header — 3 columnas: logo | canción | botones */
 #k-hdr {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   padding: 0.55rem 1rem;
   width: 100%;
   flex-shrink: 0;
@@ -74,17 +73,33 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 }
 .k-logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; color: #111; white-space: nowrap; }
 .k-logo span { color: #7c3aed; }
-.k-song { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; }
-.k-song .kt { font-size: 1rem; font-weight: 700; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
-.k-song .ka { font-size: 0.75rem; color: #888; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
-.k-btns { display: flex; gap: 7px; align-items: center; }
 
-/* Botones — play redondo verde, pausa cuadrado violeta, reiniciar y salir */
-#btn-play  { width: 54px; height: 54px; border-radius: 50%; background: #16a34a; color: #fff; border: none; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
-#btn-pause { width: 54px; height: 54px; border-radius: 12px; background: #7c3aed; color: #fff; border: none; font-size: 1.5rem; display: none; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
-#btn-rst   { width: 54px; height: 54px; border-radius: 50%; background: #e8e8e8; color: #333; border: none; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
-#btn-exit  { width: 54px; height: 54px; border-radius: 50%; background: #fee2e2; color: #dc2626; border: none; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
+.k-song { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; }
+.k-song .kt { font-size: 1.2rem; font-weight: 800; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
+.k-song .ka { font-size: 0.95rem; color: #666; font-weight: 500; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
+
+.k-btns { display: flex; gap: 6px; align-items: center; }
+
+/* Play — triángulo verde redondo */
+#btn-play  { width: 52px; height: 52px; border-radius: 50%; background: #16a34a; color: #fff; border: none; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
+/* Pausa — dos barras, cuadrado morado */
+#btn-pause { width: 52px; height: 52px; border-radius: 12px; background: #7c3aed; color: #fff; border: none; font-size: 1.4rem; display: none; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
+/* Más lento — naranja */
+#btn-slower { width: 52px; height: 52px; border-radius: 50%; background: #ea580c; color: #fff; border: none; font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; line-height: 1; }
+/* Más rápido — azul */
+#btn-faster { width: 52px; height: 52px; border-radius: 50%; background: #2563eb; color: #fff; border: none; font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; line-height: 1; }
+/* Reiniciar — gris */
+#btn-rst   { width: 52px; height: 52px; border-radius: 50%; background: #e8e8e8; color: #333; border: none; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
+/* Salir — rojo */
+#btn-exit  { width: 52px; height: 52px; border-radius: 50%; background: #fee2e2; color: #dc2626; border: none; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
 .k-btns button:active { opacity: 0.75; transform: scale(0.93); }
+
+/* Indicador de velocidad */
+#speed-badge {
+  font-size: 0.7rem; font-weight: 700; color: #2563eb;
+  background: #eff6ff; border: 1px solid #bfdbfe;
+  border-radius: 20px; padding: 2px 8px; white-space: nowrap;
+}
 
 #lyrics-win { flex: 1; width: 100%; overflow: hidden; position: relative; background: #fff; touch-action: pan-y; }
 #lyrics-box { position: absolute; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 1.1rem; padding: 0 1.5rem; will-change: transform; }
@@ -146,10 +161,13 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
       <div class="ka" id="k-artist"></div>
     </div>
     <div class="k-btns">
-      <button id="btn-play">▶</button>
-      <button id="btn-pause">⏸</button>
-      <button id="btn-rst">↩</button>
-      <button id="btn-exit">✕</button>
+      <button id="btn-play" title="Play">▶</button>
+      <button id="btn-pause" title="Pausa">⏸</button>
+      <button id="btn-slower" title="Más lento">－</button>
+      <span id="speed-badge">1×</span>
+      <button id="btn-faster" title="Más rápido">＋</button>
+      <button id="btn-rst" title="Reiniciar">↩</button>
+      <button id="btn-exit" title="Salir">✕</button>
     </div>
   </div>
   <div id="lyrics-win"><div id="lyrics-box"></div></div>
@@ -164,6 +182,9 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 var song=null,lyrics=[],kTimer=null,kStart=0,paused=false,pausedAt=0;
 var mediaRec=null,chunks=[],cntTmr=null;
 var currentY=0,targetY=0,manualOffset=0,userScrolling=false,touchStartY=0;
+var speedMultiplier=1.0; // 1.0 = normal, >1 más rápido, <1 más lento
+var SPEED_STEPS=[0.5,0.65,0.8,1.0,1.25,1.5,2.0];
+var speedIdx=3; // índice de SPEED_STEPS que apunta a 1.0
 
 function show(n){
   ['idle','listening','found'].forEach(function(id){document.getElementById('screen-'+id).classList.toggle('active',id===n);});
@@ -171,6 +192,10 @@ function show(n){
 }
 function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el.textContent=text;el.className='msg'+(cls?' '+cls:'');}
 function applyY(y){document.getElementById('lyrics-box').style.transform='translateY('+y+'px)';}
+function updateSpeedBadge(){
+  var s=SPEED_STEPS[speedIdx];
+  document.getElementById('speed-badge').textContent=s===1?'1×':(s+'×');
+}
 
 function itemScore(item){
   var t=item.trackName||'',a=item.artistName||'',s=0;
@@ -200,6 +225,26 @@ document.getElementById('btn-play').addEventListener('click',function(){if(pause
 document.getElementById('btn-pause').addEventListener('click',function(){if(!paused){pausedAt=performance.now()-kStart;setPaused(true);}});
 document.getElementById('btn-rst').addEventListener('click',restartK);
 document.getElementById('btn-exit').addEventListener('click',function(){stopTimer();show('idle');});
+
+document.getElementById('btn-slower').addEventListener('click',function(){
+  if(speedIdx>0){
+    // Ajustar kStart para mantener posición al cambiar velocidad
+    var elapsed=performance.now()-kStart;
+    speedIdx--;
+    speedMultiplier=SPEED_STEPS[speedIdx];
+    // Recalcular kStart para que el tiempo efectivo no cambie bruscamente
+    var effectiveMs=elapsed*speedMultiplier; // esto no, mejor guardar posición
+    updateSpeedBadge();
+  }
+});
+document.getElementById('btn-faster').addEventListener('click',function(){
+  if(speedIdx<SPEED_STEPS.length-1){
+    speedIdx++;
+    speedMultiplier=SPEED_STEPS[speedIdx];
+    updateSpeedBadge();
+  }
+});
+
 document.getElementById('prog-track').addEventListener('click',seekFromEvent);
 document.getElementById('prog-track').addEventListener('touchend',function(e){e.preventDefault();seekFromEvent(e.changedTouches[0]);});
 function seekFromEvent(e){if(!lyrics.length)return;var r=document.getElementById('prog-track').getBoundingClientRect();seekK(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*totalMs());}
@@ -297,6 +342,7 @@ function beginKaraoke(){
   if(!lyrics.length)return;
   document.getElementById('k-title').textContent=song.title;
   document.getElementById('k-artist').textContent=song.artist||'';
+  speedIdx=3;speedMultiplier=1.0;updateSpeedBadge();
   buildDOM();show('karaoke');
   currentY=0;targetY=0;manualOffset=0;userScrolling=false;applyY(0);
   kStart=performance.now();pausedAt=0;setPaused(false);
@@ -315,10 +361,13 @@ function buildDOM(){
   var pb=document.createElement('div');pb.style.height=pad+'px';c.appendChild(pb);
 }
 function tick(){if(paused)return;updateAt(performance.now()-kStart);}
+
 function updateAt(ms){
+  // Aplicar multiplicador de velocidad
+  var effectiveMs=ms*speedMultiplier;
   var lines=document.querySelectorAll('.ll');
   var active=-1;
-  for(var i=lyrics.length-1;i>=0;i--){if(ms>=lyrics[i].time){active=i;break;}}
+  for(var i=lyrics.length-1;i>=0;i--){if(effectiveMs>=lyrics[i].time){active=i;break;}}
   lines.forEach(function(el,i){el.classList.remove('active','past','next');if(i<active)el.classList.add('past');else if(i===active)el.classList.add('active');else if(i===active+1)el.classList.add('next');});
   if(!userScrolling&&active>=0&&lines[active]){
     var win=document.getElementById('lyrics-win');
@@ -328,15 +377,15 @@ function updateAt(ms){
     applyY(currentY);
   }
   var total=totalMs();
-  document.getElementById('prog-fill').style.width=Math.min(100,(ms/total)*100)+'%';
-  document.getElementById('t-cur').textContent=fmt(ms);
+  document.getElementById('prog-fill').style.width=Math.min(100,(effectiveMs/total)*100)+'%';
+  document.getElementById('t-cur').textContent=fmt(effectiveMs);
   document.getElementById('t-tot').textContent=fmt(total);
 }
 function totalMs(){return lyrics.length?lyrics[lyrics.length-1].time+5000:1;}
-function fmt(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function fmt(ms){var s=Math.floor(Math.max(0,ms)/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function stopTimer(){if(kTimer){clearInterval(kTimer);kTimer=null;}}
-function restartK(){userScrolling=false;manualOffset=0;currentY=0;targetY=0;applyY(0);kStart=performance.now();pausedAt=0;setPaused(false);updateAt(0);}
-function seekK(ms){kStart=performance.now()-ms;pausedAt=ms;updateAt(ms);}
+function restartK(){userScrolling=false;manualOffset=0;currentY=0;targetY=0;applyY(0);speedIdx=3;speedMultiplier=1.0;updateSpeedBadge();kStart=performance.now();pausedAt=0;setPaused(false);updateAt(0);}
+function seekK(ms){kStart=performance.now()-(ms/speedMultiplier);pausedAt=performance.now()-kStart;updateAt(performance.now()-kStart);}
 </script>
 </body>
 </html>
