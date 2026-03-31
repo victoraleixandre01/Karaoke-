@@ -55,58 +55,37 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 .btn-s { padding: 0.95rem 2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ccc; color: #555; font-size: 1rem; cursor: pointer; -webkit-appearance: none; }
 .btn-s:active { background: #eee; }
 
-/* KARAOKE — scroll via transform en lugar de scrollTop */
+/* KARAOKE */
 #screen-karaoke { justify-content: flex-start; padding: 0; gap: 0; height: 100vh; height: 100dvh; background: #fff; display: none; flex-direction: column; }
 #screen-karaoke.active { display: flex; }
 #k-hdr { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; width: 100%; flex-shrink: 0; border-bottom: 1.5px solid #eee; background: #fff; }
 .k-info { min-width: 0; flex: 1; padding-right: 8px; }
 .k-info .kt { font-size: 0.95rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #111; }
 .k-info .ka { font-size: 0.75rem; color: #888; margin-top: 2px; }
-.k-btns { display: flex; gap: 8px; flex-shrink: 0; }
-.k-btns button { width: 58px; height: 58px; border-radius: 50%; border: none; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; -webkit-appearance: none; }
-#btn-play  { background: #7c3aed; color: #fff; }
-#btn-pause { background: #7c3aed; color: #fff; display: none; }
-#btn-rst   { background: #e8e8e8; color: #333; }
-#btn-exit  { background: #fee2e2; color: #dc2626; }
-.k-btns button:active { opacity: 0.75; }
+.k-btns { display: flex; gap: 10px; flex-shrink: 0; align-items: center; }
 
-/* Ventana de letra — overflow hidden, movemos el contenido con transform */
-#lyrics-win {
-  flex: 1;
-  width: 100%;
-  overflow: hidden;
-  position: relative;
-  background: #fff;
-  touch-action: pan-y;
-}
-#lyrics-box {
-  position: absolute;
-  left: 0; right: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 0 1.5rem;
-  will-change: transform;
-}
+/* Botones play/pausa grandes y distintos */
+#btn-play  { width: 68px; height: 68px; border-radius: 50%; background: #7c3aed; color: #fff; border: none; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
+#btn-pause { width: 68px; height: 68px; border-radius: 14px; background: #7c3aed; color: #fff; border: none; font-size: 1.8rem; display: none; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
+#btn-rst   { width: 68px; height: 68px; border-radius: 50%; background: #e8e8e8; color: #333; border: none; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
+#btn-exit  { width: 68px; height: 68px; border-radius: 50%; background: #fee2e2; color: #dc2626; border: none; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-appearance: none; }
+.k-btns button:active { opacity: 0.75; transform: scale(0.93); }
 
-/* LETRA — negra, opacidad para las no activas */
+#lyrics-win { flex: 1; width: 100%; overflow: hidden; position: relative; background: #fff; touch-action: pan-y; }
+#lyrics-box { position: absolute; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 1.1rem; padding: 0 1.5rem; will-change: transform; }
+
+/* LETRA — toda negra, mismo tamaño, sin cambios */
 .ll {
-  font-size: clamp(1.5rem, 4vw, 2.1rem);
-  font-weight: 500;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-weight: 600;
   text-align: center;
   color: #111;
-  line-height: 1.35;
+  line-height: 1.4;
   padding: 0.1rem 0.5rem;
   cursor: pointer;
   user-select: none;
   width: 100%;
-  opacity: 0.25;
-  transition: opacity 0.3s, font-weight 0.3s;
 }
-.ll.past  { opacity: 0.25; }
-.ll.next  { opacity: 0.6; }
-.ll.active { opacity: 1; font-weight: 800; }
 
 #k-ftr { padding: 0.8rem 1rem; width: 100%; flex-shrink: 0; border-top: 1.5px solid #eee; background: #fff; }
 #prog-track { width: 100%; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
@@ -165,7 +144,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
     <div class="k-btns">
       <button id="btn-play">▶</button>
       <button id="btn-pause">⏸</button>
-      <button id="btn-rst">⟳</button>
+      <button id="btn-rst">↩</button>
       <button id="btn-exit">✕</button>
     </div>
   </div>
@@ -180,50 +159,32 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 'use strict';
 var song=null,lyrics=[],kTimer=null,kStart=0,paused=false,pausedAt=0;
 var mediaRec=null,chunks=[],cntTmr=null;
-var currentTranslateY=0, targetTranslateY=0, manualOffset=0, userScrolling=false;
+var currentY=0,targetY=0,manualOffset=0,userScrolling=false,touchStartY=0;
 
 function show(n){
-  ['idle','listening','found'].forEach(function(id){
-    document.getElementById('screen-'+id).classList.toggle('active',id===n);
-  });
+  ['idle','listening','found'].forEach(function(id){document.getElementById('screen-'+id).classList.toggle('active',id===n);});
   document.getElementById('screen-karaoke').classList.toggle('active',n==='karaoke');
 }
 function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el.textContent=text;el.className='msg'+(cls?' '+cls:'');}
+function applyY(y){document.getElementById('lyrics-box').style.transform='translateY('+y+'px)';}
 
 function itemScore(item){
   var t=item.trackName||'',a=item.artistName||'',s=0;
-  if(/\(/.test(t))s+=20; if(/\[/.test(t))s+=20;
-  if(/feat\.|ft\./i.test(t))s+=15; if(/feat\.|ft\./i.test(a))s+=15;
-  if(/live|directo/i.test(t))s+=30; if(/acoustic|acustic/i.test(t))s+=25;
-  if(/remaster/i.test(t))s+=20; if(/remix/i.test(t))s+=25;
-  if(/radio.?edit/i.test(t))s+=20; if(/maqueta|demo/i.test(t))s+=25;
-  if(/versión|version/i.test(t))s+=15; if(!item.syncedLyrics)s+=5;
+  if(/\(/.test(t))s+=20;if(/\[/.test(t))s+=20;
+  if(/feat\.|ft\./i.test(t))s+=15;if(/feat\.|ft\./i.test(a))s+=15;
+  if(/live|directo/i.test(t))s+=30;if(/acoustic|acustic/i.test(t))s+=25;
+  if(/remaster/i.test(t))s+=20;if(/remix/i.test(t))s+=25;
+  if(/radio.?edit/i.test(t))s+=20;if(/maqueta|demo/i.test(t))s+=25;
+  if(/versión|version/i.test(t))s+=15;if(!item.syncedLyrics)s+=5;
   return s;
 }
 
 (function(){var wf=document.getElementById('waveform');for(var i=0;i<22;i++){var b=document.createElement('div');b.className='bar';b.style.animationDelay=(i*0.05)+'s';wf.appendChild(b);}})();
 
-// Scroll manual con touch
-var touchStartY=0;
-document.getElementById('lyrics-win').addEventListener('touchstart',function(e){
-  touchStartY=e.touches[0].clientY;
-  userScrolling=true;
-  clearTimeout(window._sr);
-},{passive:true});
-document.getElementById('lyrics-win').addEventListener('touchmove',function(e){
-  var dy=e.touches[0].clientY-touchStartY;
-  touchStartY=e.touches[0].clientY;
-  manualOffset+=dy;
-  applyTransform(currentTranslateY+manualOffset);
-},{passive:true});
-document.getElementById('lyrics-win').addEventListener('touchend',function(){
-  clearTimeout(window._sr);
-  window._sr=setTimeout(function(){userScrolling=false;manualOffset=0;},3000);
-});
-
-function applyTransform(y){
-  document.getElementById('lyrics-box').style.transform='translateY('+y+'px)';
-}
+var lw=document.getElementById('lyrics-win');
+lw.addEventListener('touchstart',function(e){touchStartY=e.touches[0].clientY;userScrolling=true;clearTimeout(window._sr);},{passive:true});
+lw.addEventListener('touchmove',function(e){var dy=e.touches[0].clientY-touchStartY;touchStartY=e.touches[0].clientY;manualOffset+=dy;applyY(currentY+manualOffset);},{passive:true});
+lw.addEventListener('touchend',function(){clearTimeout(window._sr);window._sr=setTimeout(function(){userScrolling=false;manualOffset=0;},3000);});
 
 document.getElementById('btn-start').addEventListener('click',startListen);
 document.getElementById('btn-cancel').addEventListener('click',function(){cancelListen();show('idle');});
@@ -239,7 +200,16 @@ document.getElementById('prog-track').addEventListener('click',seekFromEvent);
 document.getElementById('prog-track').addEventListener('touchend',function(e){e.preventDefault();seekFromEvent(e.changedTouches[0]);});
 function seekFromEvent(e){if(!lyrics.length)return;var r=document.getElementById('prog-track').getBoundingClientRect();seekK(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*totalMs());}
 
-function setPaused(p){paused=p;document.getElementById('btn-play').style.display=p?'flex':'none';document.getElementById('btn-pause').style.display=p?'none':'flex';}
+function setPaused(p){paused=p;document.getElementById('btn-play').style.display=p?'flex':'none';document.getElementById('btn-pause').style.display=p?'flex':'none';
+  document.getElementById('btn-play').style.display=p?'flex':'none';
+  document.getElementById('btn-pause').style.display=p?'flex':'none';
+}
+
+function setPaused(p){
+  paused=p;
+  document.getElementById('btn-play').style.display=p?'flex':'none';
+  document.getElementById('btn-pause').style.display=p?'none':'flex';
+}
 
 function startListen(){
   setMsg('idle-msg','');
@@ -334,14 +304,13 @@ function beginKaraoke(){
   document.getElementById('k-title').textContent=song.title;
   document.getElementById('k-artist').textContent=song.artist||'';
   buildDOM();show('karaoke');
-  currentTranslateY=0;targetTranslateY=0;manualOffset=0;userScrolling=false;
-  applyTransform(0);
+  currentY=0;targetY=0;manualOffset=0;userScrolling=false;
+  applyY(0);
   kStart=performance.now();pausedAt=0;setPaused(false);
   stopTimer();kTimer=setInterval(tick,80);
 }
 function buildDOM(){
   var c=document.getElementById('lyrics-box');c.innerHTML='';
-  // Padding top = mitad de la ventana para que la primera línea arranque centrada
   var win=document.getElementById('lyrics-win');
   var pad=Math.floor(win.clientHeight/2);
   c.style.top=pad+'px';
@@ -350,7 +319,6 @@ function buildDOM(){
     var t=line.time;el.addEventListener('click',function(){userScrolling=false;manualOffset=0;seekK(t);});
     c.appendChild(el);
   });
-  // Padding bottom
   var pb=document.createElement('div');pb.style.height=pad+'px';c.appendChild(pb);
 }
 function tick(){if(paused)return;updateAt(performance.now()-kStart);}
@@ -359,22 +327,13 @@ function updateAt(ms){
   var active=-1;
   for(var i=lyrics.length-1;i>=0;i--){if(ms>=lyrics[i].time){active=i;break;}}
   lines.forEach(function(el,i){el.classList.remove('active','past','next');if(i<active)el.classList.add('past');else if(i===active)el.classList.add('active');else if(i===active+1)el.classList.add('next');});
-
-  // Auto-scroll: mover el lyrics-box para centrar la línea activa
   if(!userScrolling&&active>=0&&lines[active]){
     var win=document.getElementById('lyrics-win');
     var lel=lines[active];
-    // offsetTop del elemento relativo al lyrics-box
-    var elTop=lel.offsetTop;
-    var elH=lel.offsetHeight;
-    var winH=win.clientHeight;
-    // Queremos que el centro del elemento quede en el centro de la ventana
-    targetTranslateY=-(elTop - winH/2 + elH/2);
-    // Transición suave manual
-    currentTranslateY+=(targetTranslateY-currentTranslateY)*0.12;
-    applyTransform(currentTranslateY);
+    targetY=-(lel.offsetTop-win.clientHeight/2+lel.offsetHeight/2);
+    currentY+=(targetY-currentY)*0.12;
+    applyY(currentY);
   }
-
   var total=totalMs();
   document.getElementById('prog-fill').style.width=Math.min(100,(ms/total)*100)+'%';
   document.getElementById('t-cur').textContent=fmt(ms);
@@ -383,7 +342,7 @@ function updateAt(ms){
 function totalMs(){return lyrics.length?lyrics[lyrics.length-1].time+5000:1;}
 function fmt(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function stopTimer(){if(kTimer){clearInterval(kTimer);kTimer=null;}}
-function restartK(){userScrolling=false;manualOffset=0;currentTranslateY=0;targetTranslateY=0;applyTransform(0);kStart=performance.now();pausedAt=0;setPaused(false);updateAt(0);}
+function restartK(){userScrolling=false;manualOffset=0;currentY=0;targetY=0;applyY(0);kStart=performance.now();pausedAt=0;setPaused(false);updateAt(0);}
 function seekK(ms){kStart=performance.now()-ms;pausedAt=ms;updateAt(ms);}
 </script>
 </body>
