@@ -26,12 +26,6 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 .msg { font-size: 0.88rem; color: #e53e3e; text-align: center; min-height: 1.1em; line-height: 1.5; max-width: 380px; }
 .msg.ok { color: #38a169; }
 .msg.info { color: #7c3aed; }
-#results-list { width: 100%; max-height: 220px; overflow-y: auto; background: #fff; border: 1.5px solid #ddd; border-radius: 14px; display: none; }
-.result-item { padding: 0.8rem 1rem; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
-.result-item:last-child { border-bottom: none; }
-.result-item:active { background: #f5f5f7; }
-.result-title { font-weight: 600; font-size: 0.95rem; color: #111; }
-.result-artist { font-size: 0.8rem; color: #888; margin-top: 2px; }
 #screen-listening { background: #f5f5f7; }
 .pulse-wrap { position: relative; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .pr { position: absolute; border-radius: 50%; border: 2px solid rgba(124,58,237,0.3); animation: pr 2s ease-in-out infinite; }
@@ -60,8 +54,6 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 .btn-p:active { background: #6d28d9; }
 .btn-s { padding: 0.95rem 2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ccc; color: #555; font-size: 1rem; cursor: pointer; -webkit-appearance: none; }
 .btn-s:active { background: #eee; }
-
-/* KARAOKE */
 #screen-karaoke { justify-content: flex-start; padding: 0; gap: 0; min-height: 100vh; min-height: 100dvh; background: #fff; }
 #k-hdr { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; width: 100%; flex-shrink: 0; border-bottom: 1.5px solid #eee; background: #fff; }
 .k-info { min-width: 0; flex: 1; padding-right: 8px; }
@@ -69,21 +61,17 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 .k-info .ka { font-size: 0.75rem; color: #888; margin-top: 2px; }
 .k-btns { display: flex; gap: 8px; flex-shrink: 0; }
 .k-btns button { width: 58px; height: 58px; border-radius: 50%; border: none; cursor: pointer; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; -webkit-appearance: none; font-weight: 700; }
-#btn-play  { background: #7c3aed; color: #fff; display: flex; }
+#btn-play  { background: #7c3aed; color: #fff; }
 #btn-pause { background: #7c3aed; color: #fff; display: none; }
 #btn-rst   { background: #e8e8e8; color: #333; }
 #btn-exit  { background: #fee2e2; color: #dc2626; }
 .k-btns button:active { opacity: 0.8; }
-
 #lyrics-win { flex: 1; width: 100%; background: #fff; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1.5rem; scroll-behavior: smooth; }
 #lyrics-box { display: flex; flex-direction: column; align-items: center; gap: 0.9rem; width: 100%; max-width: 860px; margin: 0 auto; padding-bottom: 40vh; }
-
-/* LETRA — toda negra, solo activa más prominente */
-.ll { font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 500; text-align: center; color: #aaa; line-height: 1.35; padding: 0.1rem 0.5rem; cursor: pointer; user-select: none; width: 100%; transition: color 0.3s, font-weight 0.3s; }
+.ll { font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 500; text-align: center; color: #bbb; line-height: 1.35; padding: 0.1rem 0.5rem; cursor: pointer; user-select: none; width: 100%; transition: color 0.3s, font-weight 0.3s, font-size 0.3s; }
 .ll.past { color: #ccc; font-weight: 400; }
-.ll.next { color: #555; font-weight: 600; }
+.ll.next { color: #444; font-weight: 600; }
 .ll.active { color: #111; font-weight: 800; font-size: clamp(1.7rem, 4.5vw, 2.5rem); }
-
 #k-ftr { padding: 0.8rem 1rem; width: 100%; flex-shrink: 0; border-top: 1.5px solid #eee; background: #fff; }
 #prog-track { width: 100%; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
 #prog-fill { height: 100%; background: #7c3aed; border-radius: 3px; width: 0%; pointer-events: none; transition: width 0.2s linear; }
@@ -100,7 +88,6 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   <div class="search-box">
     <input id="manual-input" type="text" placeholder='ej: "Corazón partío" o "Alejandro Sanz"' autocomplete="off" autocorrect="off" spellcheck="false" />
     <div class="search-hint">Escribe el título o el artista</div>
-    <div id="results-list"></div>
     <button id="btn-manual">🔍 Buscar</button>
   </div>
   <p id="idle-msg" class="msg"></p>
@@ -161,34 +148,49 @@ var mediaRec=null,chunks=[],cntTmr=null,selectedLrcId=null,autoScrollEnabled=tru
 function show(n){['idle','listening','found','karaoke'].forEach(function(id){document.getElementById('screen-'+id).classList.toggle('active',id===n);});}
 function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el.textContent=text;el.className='msg'+(cls?' '+cls:'');}
 function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
-function cleanTitle(t){return(t||'').replace(/\s*[\(\[].*?[\)\]]/g,'').replace(/\s*[-–]\s*(live|en directo|acoustic|acustica|remaster|version|versión|remix|radio edit|single|demo|maqueta|ikea|feat\.?.*).*/i,'').trim();}
+
+// Puntuación de "limpieza" de un item: 0=versión estándar, mayor=más secundaria
+function itemScore(item){
+  var t=item.trackName||'', a=item.artistName||'';
+  var score=0;
+  if(/\(/.test(t))score+=20;          // tiene paréntesis
+  if(/\[/.test(t))score+=20;          // tiene corchetes
+  if(/feat\.|ft\./i.test(t))score+=15;
+  if(/feat\.|ft\./i.test(a))score+=15;
+  if(/live|directo/i.test(t))score+=30;
+  if(/acoustic|acustic/i.test(t))score+=25;
+  if(/remaster/i.test(t))score+=20;
+  if(/remix/i.test(t))score+=25;
+  if(/radio edit/i.test(t))score+=20;
+  if(/maqueta|demo/i.test(t))score+=25;
+  if(/versión|version/i.test(t))score+=15;
+  if(/ikea/i.test(t))score+=30;
+  if(!item.syncedLyrics)score+=5;     // preferir con letra sincronizada
+  return score;
+}
 
 (function(){var wf=document.getElementById('waveform');for(var i=0;i<22;i++){var b=document.createElement('div');b.className='bar';b.style.animationDelay=(i*0.05)+'s';wf.appendChild(b);}})();
 
 document.getElementById('lyrics-win').addEventListener('touchstart',function(){autoScrollEnabled=false;clearTimeout(window._sr);window._sr=setTimeout(function(){autoScrollEnabled=true;},4000);},{passive:true});
-
 document.getElementById('btn-start').addEventListener('click',startListen);
 document.getElementById('btn-cancel').addEventListener('click',function(){cancelListen();show('idle');});
 document.getElementById('btn-manual').addEventListener('click',manualSearch);
 document.getElementById('manual-input').addEventListener('keydown',function(e){if(e.key==='Enter'){e.target.blur();manualSearch();}});
-document.getElementById('manual-input').addEventListener('input',function(){selectedLrcId=null;var r=document.getElementById('results-list');r.style.display='none';r.innerHTML='';});
 document.getElementById('btn-back').addEventListener('click',function(){show('idle');});
 document.getElementById('btn-go').addEventListener('click',beginKaraoke);
-document.getElementById('btn-play').addEventListener('click',function(){if(paused)resumeK();});
-document.getElementById('btn-pause').addEventListener('click',function(){if(!paused)pauseK();});
+document.getElementById('btn-play').addEventListener('click',function(){if(paused){kStart=performance.now()-pausedAt;setPaused(false);}});
+document.getElementById('btn-pause').addEventListener('click',function(){if(!paused){pausedAt=performance.now()-kStart;setPaused(true);}});
 document.getElementById('btn-rst').addEventListener('click',restartK);
 document.getElementById('btn-exit').addEventListener('click',function(){stopTimer();show('idle');});
 document.getElementById('prog-track').addEventListener('click',seekFromEvent);
 document.getElementById('prog-track').addEventListener('touchend',function(e){e.preventDefault();seekFromEvent(e.changedTouches[0]);});
 function seekFromEvent(e){if(!lyrics.length)return;var r=document.getElementById('prog-track').getBoundingClientRect();seekK(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*totalMs());}
 
-function setPausedUI(p){
+function setPaused(p){
   paused=p;
   document.getElementById('btn-play').style.display=p?'flex':'none';
   document.getElementById('btn-pause').style.display=p?'none':'flex';
 }
-function pauseK(){pausedAt=performance.now()-kStart;setPausedUI(true);}
-function resumeK(){kStart=performance.now()-pausedAt;setPausedUI(false);}
 
 function startListen(){
   setMsg('idle-msg','');
@@ -239,73 +241,28 @@ function recognizeAudio(stream){
     .catch(function(){setMsg('listen-msg','⚠️ Error de red.','msg');setTimeout(function(){show('idle');},3000);});
 }
 
-function isSecondary(item){
-  return /\(|\[/i.test(item.trackName||'')||/[-–]\s*(live|en directo|acoustic|acustica|remaster|version|versión|remix|radio edit|single|demo|maqueta|ikea|feat\.)/i.test(item.trackName||'')||(item.artistName||'').toLowerCase().indexOf('feat')!==-1||(item.artistName||'').toLowerCase().indexOf(' con ')!==-1;
-}
-
 function manualSearch(){
   var val=document.getElementById('manual-input').value.trim();
   if(!val){setMsg('idle-msg','Escribe algo para buscar.');return;}
-  if(selectedLrcId){setMsg('idle-msg','');showFoundAndLoad(song.title,song.artist,selectedLrcId);return;}
   setMsg('idle-msg','Buscando…','info');
-  document.getElementById('results-list').style.display='none';
   fetch('https://lrclib.net/api/search?q='+encodeURIComponent(val),{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
     .then(function(r){return r.ok?r.json():[];})
     .then(function(arr){
       if(!arr||arr.length===0){setMsg('idle-msg','No encontrado. Prueba con el título exacto.');return;}
       setMsg('idle-msg','');
-      var qn=norm(cleanTitle(val));
-
-      // Separar primarias y secundarias
-      var primary=arr.filter(function(i){return!isSecondary(i);});
-      var pool=primary.length>0?primary:arr;
-
-      // Deduplicar por título limpio + artista limpio
-      var groups={};
-      pool.forEach(function(item){
-        var key=norm(cleanTitle(item.trackName||''))+'||'+norm((item.artistName||'').replace(/\s*(feat\.?|con |ft\.?).*$/i,''));
-        var cur=groups[key];
-        if(!cur||(item.syncedLyrics&&!cur.syncedLyrics))groups[key]=item;
-      });
-      var deduped=Object.keys(groups).map(function(k){return groups[k];});
-
-      // Ordenar: primero coincidencia exacta, luego con syncedLyrics
-      deduped.sort(function(a,b){
-        var an=norm(cleanTitle(a.trackName||'')),bn=norm(cleanTitle(b.trackName||''));
-        var aExact=an===qn?0:1, bExact=bn===qn?0:1;
-        if(aExact!==bExact)return aExact-bExact;
-        return (b.syncedLyrics?1:0)-(a.syncedLyrics?1:0);
-      });
-
-      var best=deduped[0];
-      var bestN=norm(cleanTitle(best.trackName||''));
-      // Si coincide con la query O solo hay 1 resultado → directo
-      if(bestN===qn||deduped.length===1){
-        selectResult(best);
-      } else {
-        showResults(deduped.slice(0,4));
-      }
+      // Elegir siempre el mejor automáticamente — menor score = más original
+      arr.sort(function(a,b){return itemScore(a)-itemScore(b);});
+      selectResult(arr[0]);
     })
     .catch(function(){setMsg('idle-msg','⚠️ Error de red.');});
 }
 
-function showResults(arr){
-  var list=document.getElementById('results-list');list.innerHTML='';
-  arr.forEach(function(item){
-    var div=document.createElement('div');div.className='result-item';
-    var t=document.createElement('div');t.className='result-title';t.textContent=item.trackName||'—';
-    var a=document.createElement('div');a.className='result-artist';a.textContent=item.artistName||'';
-    div.appendChild(t);div.appendChild(a);
-    div.addEventListener('click',function(){selectResult(item);});
-    list.appendChild(div);
-  });
-  list.style.display='block';
-}
 function selectResult(item){
-  selectedLrcId=item.id;song={title:item.trackName||'Desconocido',artist:item.artistName||''};
-  document.getElementById('results-list').style.display='none';setMsg('idle-msg','');
+  selectedLrcId=item.id;
+  song={title:item.trackName||'Desconocido',artist:item.artistName||''};
   showFoundAndLoad(song.title,song.artist,item.id);
 }
+
 function showFoundAndLoad(title,artist,lrcId){
   document.getElementById('found-title').textContent=title;
   document.getElementById('found-artist').textContent=artist||'';
@@ -320,21 +277,34 @@ function showFoundAndLoad(title,artist,lrcId){
     })
     .catch(function(){document.getElementById('loading-lyrics').style.display='none';setMsg('found-msg','⚠️ Error de red.');document.getElementById('found-btns').style.display='flex';});
 }
+
 function fetchLyrics(lrcId){
-  if(lrcId){return fetch('https://lrclib.net/api/get/'+lrcId,{headers:{'Lrclib-Client':'KaraokeApp/1.0'}}).then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.syncedLyrics)return parseLRC(d.syncedLyrics);if(d&&d.plainLyrics)return buildPlain(d.plainLyrics);return null;});}
-  var url1='https://lrclib.net/api/get?track_name='+encodeURIComponent(song.title)+(song.artist?'&artist_name='+encodeURIComponent(song.artist):'');
-  var url2='https://lrclib.net/api/search?q='+encodeURIComponent(song.title+' '+song.artist);
-  function tryGet(url){return fetch(url,{headers:{'Lrclib-Client':'KaraokeApp/1.0'}}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
-  return tryGet(url1).then(function(d){
-    if(d&&!d.error){if(d.syncedLyrics)return parseLRC(d.syncedLyrics);if(d.plainLyrics)return buildPlain(d.plainLyrics);}
-    return tryGet(url2).then(function(arr){
-      if(!arr||!Array.isArray(arr))return null;
+  if(lrcId){
+    return fetch('https://lrclib.net/api/get/'+lrcId,{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(d){
+        if(d&&d.syncedLyrics)return parseLRC(d.syncedLyrics);
+        if(d&&d.plainLyrics)return buildPlain(d.plainLyrics);
+        // Si no tiene letra, buscar la siguiente mejor
+        return fetchBestLyrics(song.title,song.artist);
+      });
+  }
+  return fetchBestLyrics(song.title,song.artist);
+}
+
+function fetchBestLyrics(title,artist){
+  var url='https://lrclib.net/api/search?q='+encodeURIComponent(title+(artist?' '+artist:''));
+  return fetch(url,{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
+    .then(function(r){return r.ok?r.json():[];})
+    .then(function(arr){
+      if(!arr||!arr.length)return null;
+      arr.sort(function(a,b){return itemScore(a)-itemScore(b);});
       for(var i=0;i<arr.length;i++){if(arr[i].syncedLyrics)return parseLRC(arr[i].syncedLyrics);}
       for(var j=0;j<arr.length;j++){if(arr[j].plainLyrics)return buildPlain(arr[j].plainLyrics);}
       return null;
     });
-  });
 }
+
 function parseLRC(lrc){var result=[];lrc.split('\n').forEach(function(line){var m=line.match(/\[(\d+):(\d+\.\d+)\](.*)/);if(m){var ms=(parseInt(m[1])*60+parseFloat(m[2]))*1000;var text=m[3].trim();if(text)result.push({time:ms,text:text});}});return result;}
 function buildPlain(plain){var lines=plain.split('\n').filter(function(l){return l.trim();});var dur=lines.length*3600;return lines.map(function(text,i){return{time:i*(dur/lines.length),text:text};});}
 
@@ -343,8 +313,7 @@ function beginKaraoke(){
   document.getElementById('k-title').textContent=song.title;
   document.getElementById('k-artist').textContent=song.artist||'';
   buildDOM();show('karaoke');autoScrollEnabled=true;
-  kStart=performance.now();pausedAt=0;
-  setPausedUI(false);
+  kStart=performance.now();pausedAt=0;setPaused(false);
   stopTimer();kTimer=setInterval(tick,80);
 }
 function buildDOM(){
@@ -372,7 +341,7 @@ function updateAt(ms){
 function totalMs(){return lyrics.length?lyrics[lyrics.length-1].time+5000:1;}
 function fmt(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function stopTimer(){if(kTimer){clearInterval(kTimer);kTimer=null;}}
-function restartK(){autoScrollEnabled=true;kStart=performance.now();pausedAt=0;setPausedUI(false);document.getElementById('lyrics-win').scrollTo({top:0,behavior:'smooth'});updateAt(0);}
+function restartK(){autoScrollEnabled=true;kStart=performance.now();pausedAt=0;setPaused(false);document.getElementById('lyrics-win').scrollTo({top:0,behavior:'smooth'});updateAt(0);}
 function seekK(ms){kStart=performance.now()-ms;pausedAt=ms;updateAt(ms);}
 </script>
 </body>
