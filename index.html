@@ -60,25 +60,34 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 .btn-p:active { background: #6d28d9; }
 .btn-s { padding: 0.95rem 2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ccc; color: #555; font-size: 1rem; cursor: pointer; -webkit-appearance: none; }
 .btn-s:active { background: #eee; }
+
+/* KARAOKE */
 #screen-karaoke { justify-content: flex-start; padding: 0; gap: 0; min-height: 100vh; min-height: 100dvh; background: #fff; }
-#k-hdr { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.2rem; width: 100%; flex-shrink: 0; border-bottom: 1.5px solid #eee; background: #fff; }
-.k-info { min-width: 0; flex: 1; padding-right: 12px; }
-.k-info .kt { font-size: 1rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #111; }
-.k-info .ka { font-size: 0.78rem; color: #888; margin-top: 2px; }
-.k-btns { display: flex; gap: 10px; flex-shrink: 0; }
-.k-btns button { width: 60px; height: 60px; border-radius: 50%; background: #f0f0f0; border: none; color: #111; cursor: pointer; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; -webkit-appearance: none; }
-.k-btns button:active { background: #ddd; }
-.k-btns #btn-exit { background: #fee2e2; color: #dc2626; }
-#lyrics-win { flex: 1; width: 100%; background: #fff; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1.5rem 1.5rem; scroll-behavior: smooth; }
-#lyrics-box { display: flex; flex-direction: column; align-items: center; gap: 1rem; width: 100%; max-width: 860px; margin: 0 auto; padding-bottom: 40vh; }
-.ll { font-size: clamp(1.6rem, 4.5vw, 2.4rem); font-weight: 600; text-align: center; color: #111; line-height: 1.3; padding: 0.1rem 0.5rem; cursor: pointer; user-select: none; width: 100%; opacity: 0.22; transition: opacity 0.35s; }
-.ll.past { opacity: 0.22; }
-.ll.next { opacity: 0.55; }
-.ll.active { opacity: 1; }
-#k-ftr { padding: 0.9rem 1.2rem; width: 100%; flex-shrink: 0; border-top: 1.5px solid #eee; background: #fff; }
+#k-hdr { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; width: 100%; flex-shrink: 0; border-bottom: 1.5px solid #eee; background: #fff; }
+.k-info { min-width: 0; flex: 1; padding-right: 8px; }
+.k-info .kt { font-size: 0.95rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #111; }
+.k-info .ka { font-size: 0.75rem; color: #888; margin-top: 2px; }
+.k-btns { display: flex; gap: 8px; flex-shrink: 0; }
+.k-btns button { width: 58px; height: 58px; border-radius: 50%; border: none; cursor: pointer; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; -webkit-appearance: none; font-weight: 700; }
+#btn-play  { background: #7c3aed; color: #fff; display: flex; }
+#btn-pause { background: #7c3aed; color: #fff; display: none; }
+#btn-rst   { background: #e8e8e8; color: #333; }
+#btn-exit  { background: #fee2e2; color: #dc2626; }
+.k-btns button:active { opacity: 0.8; }
+
+#lyrics-win { flex: 1; width: 100%; background: #fff; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1.5rem; scroll-behavior: smooth; }
+#lyrics-box { display: flex; flex-direction: column; align-items: center; gap: 0.9rem; width: 100%; max-width: 860px; margin: 0 auto; padding-bottom: 40vh; }
+
+/* LETRA — toda negra, solo activa más prominente */
+.ll { font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 500; text-align: center; color: #aaa; line-height: 1.35; padding: 0.1rem 0.5rem; cursor: pointer; user-select: none; width: 100%; transition: color 0.3s, font-weight 0.3s; }
+.ll.past { color: #ccc; font-weight: 400; }
+.ll.next { color: #555; font-weight: 600; }
+.ll.active { color: #111; font-weight: 800; font-size: clamp(1.7rem, 4.5vw, 2.5rem); }
+
+#k-ftr { padding: 0.8rem 1rem; width: 100%; flex-shrink: 0; border-top: 1.5px solid #eee; background: #fff; }
 #prog-track { width: 100%; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
 #prog-fill { height: 100%; background: #7c3aed; border-radius: 3px; width: 0%; pointer-events: none; transition: width 0.2s linear; }
-.time-row { display: flex; justify-content: space-between; margin-top: 7px; font-size: 0.76rem; color: #aaa; }
+.time-row { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.76rem; color: #aaa; }
 </style>
 </head>
 <body>
@@ -131,8 +140,9 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
       <div class="ka" id="k-artist"></div>
     </div>
     <div class="k-btns">
-      <button id="btn-pp">⏸</button>
-      <button id="btn-rst">↩</button>
+      <button id="btn-play">▶</button>
+      <button id="btn-pause">⏸</button>
+      <button id="btn-rst">⟳</button>
       <button id="btn-exit">✕</button>
     </div>
   </div>
@@ -146,13 +156,12 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 <script>
 'use strict';
 var song=null,lyrics=[],kTimer=null,kStart=0,paused=false,pausedAt=0;
-var mediaRec=null,chunks=[],cntTmr=null,selectedLrcId=null;
-var autoScrollEnabled=true;
+var mediaRec=null,chunks=[],cntTmr=null,selectedLrcId=null,autoScrollEnabled=true;
 
 function show(n){['idle','listening','found','karaoke'].forEach(function(id){document.getElementById('screen-'+id).classList.toggle('active',id===n);});}
 function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el.textContent=text;el.className='msg'+(cls?' '+cls:'');}
 function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
-function cleanTitle(t){return(t||'').replace(/\s*[\(\[].*?[\)\]]/g,'').replace(/\s*[-–]\s*(live|acoustic|remaster|version|versión|remix|radio edit|single|demo|maqueta|ikea).*/i,'').trim();}
+function cleanTitle(t){return(t||'').replace(/\s*[\(\[].*?[\)\]]/g,'').replace(/\s*[-–]\s*(live|en directo|acoustic|acustica|remaster|version|versión|remix|radio edit|single|demo|maqueta|ikea|feat\.?.*).*/i,'').trim();}
 
 (function(){var wf=document.getElementById('waveform');for(var i=0;i<22;i++){var b=document.createElement('div');b.className='bar';b.style.animationDelay=(i*0.05)+'s';wf.appendChild(b);}})();
 
@@ -165,12 +174,21 @@ document.getElementById('manual-input').addEventListener('keydown',function(e){i
 document.getElementById('manual-input').addEventListener('input',function(){selectedLrcId=null;var r=document.getElementById('results-list');r.style.display='none';r.innerHTML='';});
 document.getElementById('btn-back').addEventListener('click',function(){show('idle');});
 document.getElementById('btn-go').addEventListener('click',beginKaraoke);
-document.getElementById('btn-pp').addEventListener('click',togglePause);
+document.getElementById('btn-play').addEventListener('click',function(){if(paused)resumeK();});
+document.getElementById('btn-pause').addEventListener('click',function(){if(!paused)pauseK();});
 document.getElementById('btn-rst').addEventListener('click',restartK);
 document.getElementById('btn-exit').addEventListener('click',function(){stopTimer();show('idle');});
 document.getElementById('prog-track').addEventListener('click',seekFromEvent);
 document.getElementById('prog-track').addEventListener('touchend',function(e){e.preventDefault();seekFromEvent(e.changedTouches[0]);});
 function seekFromEvent(e){if(!lyrics.length)return;var r=document.getElementById('prog-track').getBoundingClientRect();seekK(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*totalMs());}
+
+function setPausedUI(p){
+  paused=p;
+  document.getElementById('btn-play').style.display=p?'flex':'none';
+  document.getElementById('btn-pause').style.display=p?'none':'flex';
+}
+function pauseK(){pausedAt=performance.now()-kStart;setPausedUI(true);}
+function resumeK(){kStart=performance.now()-pausedAt;setPausedUI(false);}
 
 function startListen(){
   setMsg('idle-msg','');
@@ -221,12 +239,8 @@ function recognizeAudio(stream){
     .catch(function(){setMsg('listen-msg','⚠️ Error de red.','msg');setTimeout(function(){show('idle');},3000);});
 }
 
-function scoreItem(item,qn){
-  var score=0;
-  if(/\(|\[|-\s*(live|acoustic|remaster|versión|version|remix|maqueta|ikea)/i.test(item.trackName||''))score+=10;
-  if(norm(cleanTitle(item.trackName||''))===qn)score-=5;
-  if(item.syncedLyrics)score-=3;
-  return score;
+function isSecondary(item){
+  return /\(|\[/i.test(item.trackName||'')||/[-–]\s*(live|en directo|acoustic|acustica|remaster|version|versión|remix|radio edit|single|demo|maqueta|ikea|feat\.)/i.test(item.trackName||'')||(item.artistName||'').toLowerCase().indexOf('feat')!==-1||(item.artistName||'').toLowerCase().indexOf(' con ')!==-1;
 }
 
 function manualSearch(){
@@ -241,19 +255,40 @@ function manualSearch(){
       if(!arr||arr.length===0){setMsg('idle-msg','No encontrado. Prueba con el título exacto.');return;}
       setMsg('idle-msg','');
       var qn=norm(cleanTitle(val));
+
+      // Separar primarias y secundarias
+      var primary=arr.filter(function(i){return!isSecondary(i);});
+      var pool=primary.length>0?primary:arr;
+
+      // Deduplicar por título limpio + artista limpio
       var groups={};
-      arr.forEach(function(item){
-        var key=norm(cleanTitle(item.trackName||''))+'||'+norm(item.artistName||'');
-        if(!groups[key]||scoreItem(item,qn)<scoreItem(groups[key],qn))groups[key]=item;
+      pool.forEach(function(item){
+        var key=norm(cleanTitle(item.trackName||''))+'||'+norm((item.artistName||'').replace(/\s*(feat\.?|con |ft\.?).*$/i,''));
+        var cur=groups[key];
+        if(!cur||(item.syncedLyrics&&!cur.syncedLyrics))groups[key]=item;
       });
       var deduped=Object.keys(groups).map(function(k){return groups[k];});
-      deduped.sort(function(a,b){return scoreItem(a,qn)-scoreItem(b,qn);});
+
+      // Ordenar: primero coincidencia exacta, luego con syncedLyrics
+      deduped.sort(function(a,b){
+        var an=norm(cleanTitle(a.trackName||'')),bn=norm(cleanTitle(b.trackName||''));
+        var aExact=an===qn?0:1, bExact=bn===qn?0:1;
+        if(aExact!==bExact)return aExact-bExact;
+        return (b.syncedLyrics?1:0)-(a.syncedLyrics?1:0);
+      });
+
       var best=deduped[0];
-      if(norm(cleanTitle(best.trackName||''))===qn||deduped.length===1){selectResult(best);}
-      else{showResults(deduped.slice(0,4));}
+      var bestN=norm(cleanTitle(best.trackName||''));
+      // Si coincide con la query O solo hay 1 resultado → directo
+      if(bestN===qn||deduped.length===1){
+        selectResult(best);
+      } else {
+        showResults(deduped.slice(0,4));
+      }
     })
     .catch(function(){setMsg('idle-msg','⚠️ Error de red.');});
 }
+
 function showResults(arr){
   var list=document.getElementById('results-list');list.innerHTML='';
   arr.forEach(function(item){
@@ -280,7 +315,7 @@ function showFoundAndLoad(title,artist,lrcId){
   fetchLyrics(lrcId)
     .then(function(result){
       document.getElementById('loading-lyrics').style.display='none';
-      if(!result||result.length===0){setMsg('found-msg','⚠️ No se encontró letra. Prueba con el título exacto.');document.getElementById('found-btns').style.display='flex';return;}
+      if(!result||result.length===0){setMsg('found-msg','⚠️ No se encontró letra.');document.getElementById('found-btns').style.display='flex';return;}
       lyrics=result;beginKaraoke();
     })
     .catch(function(){document.getElementById('loading-lyrics').style.display='none';setMsg('found-msg','⚠️ Error de red.');document.getElementById('found-btns').style.display='flex';});
@@ -308,8 +343,8 @@ function beginKaraoke(){
   document.getElementById('k-title').textContent=song.title;
   document.getElementById('k-artist').textContent=song.artist||'';
   buildDOM();show('karaoke');autoScrollEnabled=true;
-  kStart=performance.now();pausedAt=0;paused=false;
-  document.getElementById('btn-pp').textContent='⏸';
+  kStart=performance.now();pausedAt=0;
+  setPausedUI(false);
   stopTimer();kTimer=setInterval(tick,80);
 }
 function buildDOM(){
@@ -325,7 +360,10 @@ function updateAt(ms){
   var lines=document.querySelectorAll('.ll');var active=-1;
   for(var i=lyrics.length-1;i>=0;i--){if(ms>=lyrics[i].time){active=i;break;}}
   lines.forEach(function(el,i){el.classList.remove('active','past','next');if(i<active)el.classList.add('past');else if(i===active)el.classList.add('active');else if(i===active+1)el.classList.add('next');});
-  if(autoScrollEnabled&&active>=0&&lines[active]){var win=document.getElementById('lyrics-win');var lel=lines[active];var target=lel.offsetTop-(win.clientHeight/2)+(lel.offsetHeight/2);win.scrollTo({top:Math.max(0,target),behavior:'smooth'});}
+  if(autoScrollEnabled&&active>=0&&lines[active]){
+    var win=document.getElementById('lyrics-win');var lel=lines[active];
+    win.scrollTo({top:Math.max(0,lel.offsetTop-(win.clientHeight/2)+(lel.offsetHeight/2)),behavior:'smooth'});
+  }
   var total=totalMs();
   document.getElementById('prog-fill').style.width=Math.min(100,(ms/total)*100)+'%';
   document.getElementById('t-cur').textContent=fmt(ms);
@@ -334,8 +372,7 @@ function updateAt(ms){
 function totalMs(){return lyrics.length?lyrics[lyrics.length-1].time+5000:1;}
 function fmt(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function stopTimer(){if(kTimer){clearInterval(kTimer);kTimer=null;}}
-function togglePause(){if(paused){kStart=performance.now()-pausedAt;paused=false;document.getElementById('btn-pp').textContent='⏸';}else{pausedAt=performance.now()-kStart;paused=true;document.getElementById('btn-pp').textContent='▶';}}
-function restartK(){autoScrollEnabled=true;kStart=performance.now();pausedAt=0;paused=false;document.getElementById('btn-pp').textContent='⏸';document.getElementById('lyrics-win').scrollTo({top:0,behavior:'smooth'});updateAt(0);}
+function restartK(){autoScrollEnabled=true;kStart=performance.now();pausedAt=0;setPausedUI(false);document.getElementById('lyrics-win').scrollTo({top:0,behavior:'smooth'});updateAt(0);}
 function seekK(ms){kStart=performance.now()-ms;pausedAt=ms;updateAt(ms);}
 </script>
 </body>
