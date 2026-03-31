@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Karaoke 🎤</title>
+<title>Karaoke Vic</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #111; overflow: hidden; }
-.screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh; min-height: 100dvh; padding: 2rem 1.5rem; gap: 1.4rem; }
+.screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh; min-height: 100dvh; padding: 2rem 1.5rem; gap: 1.6rem; }
 .screen.active { display: flex; }
 #screen-idle { background: #f5f5f7; }
 .logo { font-size: clamp(2.8rem, 10vw, 5rem); font-weight: 800; letter-spacing: -3px; color: #111; }
 .logo span { color: #7c3aed; }
 .tagline { font-size: 0.8rem; letter-spacing: 4px; text-transform: uppercase; color: #888; text-align: center; }
-#btn-start { width: 100%; max-width: 380px; padding: 1.15rem 2rem; border-radius: 50px; background: #7c3aed; border: none; color: #fff; font-size: 1.15rem; font-weight: 600; cursor: pointer; -webkit-appearance: none; }
+#btn-start { width: 100%; max-width: 480px; padding: 1.6rem 2rem; border-radius: 50px; background: #7c3aed; border: none; color: #fff; font-size: 1.5rem; font-weight: 700; cursor: pointer; -webkit-appearance: none; }
 #btn-start:active { background: #6d28d9; }
 .or-line { color: #bbb; font-size: 0.85rem; }
-.search-box { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 8px; }
-.search-box input { width: 100%; padding: 0.9rem 1rem; border-radius: 14px; background: #fff; border: 1.5px solid #ddd; color: #111; font-size: 1rem; outline: none; -webkit-appearance: none; }
+.search-box { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 10px; }
+.search-box input { width: 100%; padding: 1.1rem 1.2rem; border-radius: 16px; background: #fff; border: 1.5px solid #ddd; color: #111; font-size: 1.1rem; outline: none; -webkit-appearance: none; }
 .search-box input::placeholder { color: #bbb; }
 .search-box input:focus { border-color: #7c3aed; }
 .search-hint { font-size: 0.75rem; color: #999; text-align: center; line-height: 1.5; }
-.search-box button { width: 100%; padding: 0.9rem 1.2rem; border-radius: 14px; background: #111; border: none; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; -webkit-appearance: none; }
+.search-box button { width: 100%; padding: 1.3rem 1.2rem; border-radius: 16px; background: #111; border: none; color: #fff; font-size: 1.3rem; font-weight: 700; cursor: pointer; -webkit-appearance: none; }
 .search-box button:active { background: #333; }
-.msg { font-size: 0.88rem; color: #e53e3e; text-align: center; min-height: 1.1em; line-height: 1.5; max-width: 340px; }
+.msg { font-size: 0.88rem; color: #e53e3e; text-align: center; min-height: 1.1em; line-height: 1.5; max-width: 380px; }
 .msg.ok { color: #38a169; }
 .msg.info { color: #7c3aed; }
 #results-list { width: 100%; max-height: 220px; overflow-y: auto; background: #fff; border: 1.5px solid #ddd; border-radius: 14px; display: none; }
@@ -66,7 +66,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 .k-info .kt { font-size: 1rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #111; }
 .k-info .ka { font-size: 0.78rem; color: #888; margin-top: 2px; }
 .k-btns { display: flex; gap: 10px; flex-shrink: 0; }
-.k-btns button { width: 56px; height: 56px; border-radius: 50%; background: #f0f0f0; border: none; color: #111; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; -webkit-appearance: none; }
+.k-btns button { width: 60px; height: 60px; border-radius: 50%; background: #f0f0f0; border: none; color: #111; cursor: pointer; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; -webkit-appearance: none; }
 .k-btns button:active { background: #ddd; }
 .k-btns #btn-exit { background: #fee2e2; color: #dc2626; }
 #lyrics-win { flex: 1; width: 100%; background: #fff; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1.5rem 1.5rem; scroll-behavior: smooth; }
@@ -84,7 +84,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 <body>
 
 <div id="screen-idle" class="screen active">
-  <div class="logo">kara<span>ok</span>e</div>
+  <div class="logo">Karaoke <span>Vic</span></div>
   <div class="tagline">canta con tus amigos</div>
   <button id="btn-start">🎤 Escuchar la canción</button>
   <div class="or-line">— o busca por título o artista —</div>
@@ -152,14 +152,11 @@ var autoScrollEnabled=true;
 function show(n){['idle','listening','found','karaoke'].forEach(function(id){document.getElementById('screen-'+id).classList.toggle('active',id===n);});}
 function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el.textContent=text;el.className='msg'+(cls?' '+cls:'');}
 function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
+function cleanTitle(t){return(t||'').replace(/\s*[\(\[].*?[\)\]]/g,'').replace(/\s*[-–]\s*(live|acoustic|remaster|version|versión|remix|radio edit|single|demo|maqueta|ikea).*/i,'').trim();}
 
 (function(){var wf=document.getElementById('waveform');for(var i=0;i<22;i++){var b=document.createElement('div');b.className='bar';b.style.animationDelay=(i*0.05)+'s';wf.appendChild(b);}})();
 
-document.getElementById('lyrics-win').addEventListener('touchstart',function(){
-  autoScrollEnabled=false;
-  clearTimeout(window._scrollResume);
-  window._scrollResume=setTimeout(function(){autoScrollEnabled=true;},4000);
-},{passive:true});
+document.getElementById('lyrics-win').addEventListener('touchstart',function(){autoScrollEnabled=false;clearTimeout(window._sr);window._sr=setTimeout(function(){autoScrollEnabled=true;},4000);},{passive:true});
 
 document.getElementById('btn-start').addEventListener('click',startListen);
 document.getElementById('btn-cancel').addEventListener('click',function(){cancelListen();show('idle');});
@@ -180,15 +177,13 @@ function startListen(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setMsg('idle-msg','⚠️ Usa Safari (iOS) o Chrome (Android).');return;}
   navigator.mediaDevices.getUserMedia({audio:true,video:false})
     .then(function(stream){
-      chunks=[];
-      var opts={};
+      chunks=[];var opts={};
       if(MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))opts.mimeType='audio/webm;codecs=opus';
       else if(MediaRecorder.isTypeSupported('audio/webm'))opts.mimeType='audio/webm';
       else if(MediaRecorder.isTypeSupported('audio/mp4'))opts.mimeType='audio/mp4';
       mediaRec=new MediaRecorder(stream,opts);
       mediaRec.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
-      mediaRec.start(500);
-      show('listening');
+      mediaRec.start(500);show('listening');
       startCountdown(8,function(){recognizeAudio(stream);});
     })
     .catch(function(err){
@@ -220,33 +215,17 @@ function recognizeAudio(stream){
   fetch('https://api.audd.io/',{method:'POST',body:form})
     .then(function(r){return r.json();})
     .then(function(data){
-      if(data.status==='success'&&data.result){
-        song={title:data.result.title,artist:data.result.artist};
-        showFoundAndLoad(song.title,song.artist,null);
-      }else{
-        setMsg('listen-msg','No reconocida. Busca manualmente.','msg');
-        setTimeout(function(){show('idle');},3000);
-      }
+      if(data.status==='success'&&data.result){song={title:data.result.title,artist:data.result.artist};showFoundAndLoad(song.title,song.artist,null);}
+      else{setMsg('listen-msg','No reconocida. Busca manualmente.','msg');setTimeout(function(){show('idle');},3000);}
     })
     .catch(function(){setMsg('listen-msg','⚠️ Error de red.','msg');setTimeout(function(){show('idle');},3000);});
 }
 
-// Quitar paréntesis, corchetes y sufijos tipo "- Live", "- Remaster"
-function cleanTitle(t){
-  return (t||'').replace(/\s*[\(\[].*?[\)\]]/g,'').replace(/\s*[-–]\s*(live|acoustic|remaster|version|versión|remix|radio edit|single|demo|maqueta).*/i,'').trim();
-}
-
-// Puntuar un resultado — menor es mejor
-function scoreItem(item, qn){
-  var tn = norm(cleanTitle(item.trackName||''));
-  var score = 0;
-  // Penalizar versiones secundarias en el título original
-  var raw = norm(item.trackName||'');
-  if(/\(|\[|-\s*(live|acoustic|remaster|versión|version|remix|maqueta|ikea)/i.test(item.trackName||'')) score += 10;
-  // Premiar coincidencia exacta con la query
-  if(tn === qn) score -= 5;
-  // Premiar si tiene letra sincronizada
-  if(item.syncedLyrics) score -= 3;
+function scoreItem(item,qn){
+  var score=0;
+  if(/\(|\[|-\s*(live|acoustic|remaster|versión|version|remix|maqueta|ikea)/i.test(item.trackName||''))score+=10;
+  if(norm(cleanTitle(item.trackName||''))===qn)score-=5;
+  if(item.syncedLyrics)score-=3;
   return score;
 }
 
@@ -256,43 +235,27 @@ function manualSearch(){
   if(selectedLrcId){setMsg('idle-msg','');showFoundAndLoad(song.title,song.artist,selectedLrcId);return;}
   setMsg('idle-msg','Buscando…','info');
   document.getElementById('results-list').style.display='none';
-
   fetch('https://lrclib.net/api/search?q='+encodeURIComponent(val),{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
     .then(function(r){return r.ok?r.json():[];})
     .then(function(arr){
       if(!arr||arr.length===0){setMsg('idle-msg','No encontrado. Prueba con el título exacto.');return;}
       setMsg('idle-msg','');
       var qn=norm(cleanTitle(val));
-
-      // Agrupar por título+artista limpios y quedarse con el mejor de cada grupo
       var groups={};
       arr.forEach(function(item){
         var key=norm(cleanTitle(item.trackName||''))+'||'+norm(item.artistName||'');
-        if(!groups[key]||scoreItem(item,qn)<scoreItem(groups[key],qn)){
-          groups[key]=item;
-        }
+        if(!groups[key]||scoreItem(item,qn)<scoreItem(groups[key],qn))groups[key]=item;
       });
-      var deduped=Object.values(groups);
-
-      // Ordenar por score
+      var deduped=Object.keys(groups).map(function(k){return groups[k];});
       deduped.sort(function(a,b){return scoreItem(a,qn)-scoreItem(b,qn);});
-
-      // Si el mejor resultado coincide claramente, elegirlo solo
       var best=deduped[0];
-      var bestTitle=norm(cleanTitle(best.trackName||''));
-      if(bestTitle===qn || deduped.length===1){
-        selectResult(best);
-      } else {
-        // Mostrar máximo 4 opciones deduplicadas
-        showResults(deduped.slice(0,4));
-      }
+      if(norm(cleanTitle(best.trackName||''))===qn||deduped.length===1){selectResult(best);}
+      else{showResults(deduped.slice(0,4));}
     })
     .catch(function(){setMsg('idle-msg','⚠️ Error de red.');});
 }
-
 function showResults(arr){
-  var list=document.getElementById('results-list');
-  list.innerHTML='';
+  var list=document.getElementById('results-list');list.innerHTML='';
   arr.forEach(function(item){
     var div=document.createElement('div');div.className='result-item';
     var t=document.createElement('div');t.className='result-title';t.textContent=item.trackName||'—';
@@ -304,48 +267,26 @@ function showResults(arr){
   list.style.display='block';
 }
 function selectResult(item){
-  selectedLrcId=item.id;
-  song={title:item.trackName||'Desconocido',artist:item.artistName||''};
-  document.getElementById('results-list').style.display='none';
-  setMsg('idle-msg','');
+  selectedLrcId=item.id;song={title:item.trackName||'Desconocido',artist:item.artistName||''};
+  document.getElementById('results-list').style.display='none';setMsg('idle-msg','');
   showFoundAndLoad(song.title,song.artist,item.id);
 }
-
 function showFoundAndLoad(title,artist,lrcId){
   document.getElementById('found-title').textContent=title;
   document.getElementById('found-artist').textContent=artist||'';
   document.getElementById('loading-lyrics').style.display='flex';
   document.getElementById('found-btns').style.display='none';
-  setMsg('found-msg','');
-  show('found');
+  setMsg('found-msg','');show('found');
   fetchLyrics(lrcId)
     .then(function(result){
       document.getElementById('loading-lyrics').style.display='none';
-      if(!result||result.length===0){
-        setMsg('found-msg','⚠️ No se encontró letra. Prueba escribiendo el título exacto.');
-        document.getElementById('found-btns').style.display='flex';
-        return;
-      }
-      lyrics=result;
-      beginKaraoke();
+      if(!result||result.length===0){setMsg('found-msg','⚠️ No se encontró letra. Prueba con el título exacto.');document.getElementById('found-btns').style.display='flex';return;}
+      lyrics=result;beginKaraoke();
     })
-    .catch(function(){
-      document.getElementById('loading-lyrics').style.display='none';
-      setMsg('found-msg','⚠️ Error de red.');
-      document.getElementById('found-btns').style.display='flex';
-    });
+    .catch(function(){document.getElementById('loading-lyrics').style.display='none';setMsg('found-msg','⚠️ Error de red.');document.getElementById('found-btns').style.display='flex';});
 }
-
 function fetchLyrics(lrcId){
-  if(lrcId){
-    return fetch('https://lrclib.net/api/get/'+lrcId,{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
-      .then(function(r){return r.ok?r.json():null;})
-      .then(function(d){
-        if(d&&d.syncedLyrics)return parseLRC(d.syncedLyrics);
-        if(d&&d.plainLyrics)return buildPlain(d.plainLyrics);
-        return null;
-      });
-  }
+  if(lrcId){return fetch('https://lrclib.net/api/get/'+lrcId,{headers:{'Lrclib-Client':'KaraokeApp/1.0'}}).then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.syncedLyrics)return parseLRC(d.syncedLyrics);if(d&&d.plainLyrics)return buildPlain(d.plainLyrics);return null;});}
   var url1='https://lrclib.net/api/get?track_name='+encodeURIComponent(song.title)+(song.artist?'&artist_name='+encodeURIComponent(song.artist):'');
   var url2='https://lrclib.net/api/search?q='+encodeURIComponent(song.title+' '+song.artist);
   function tryGet(url){return fetch(url,{headers:{'Lrclib-Client':'KaraokeApp/1.0'}}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
@@ -359,59 +300,32 @@ function fetchLyrics(lrcId){
     });
   });
 }
-function parseLRC(lrc){
-  var result=[];
-  lrc.split('\n').forEach(function(line){
-    var m=line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
-    if(m){var ms=(parseInt(m[1])*60+parseFloat(m[2]))*1000;var text=m[3].trim();if(text)result.push({time:ms,text:text});}
-  });
-  return result;
-}
-function buildPlain(plain){
-  var lines=plain.split('\n').filter(function(l){return l.trim();});
-  var dur=lines.length*3600;
-  return lines.map(function(text,i){return{time:i*(dur/lines.length),text:text};});
-}
+function parseLRC(lrc){var result=[];lrc.split('\n').forEach(function(line){var m=line.match(/\[(\d+):(\d+\.\d+)\](.*)/);if(m){var ms=(parseInt(m[1])*60+parseFloat(m[2]))*1000;var text=m[3].trim();if(text)result.push({time:ms,text:text});}});return result;}
+function buildPlain(plain){var lines=plain.split('\n').filter(function(l){return l.trim();});var dur=lines.length*3600;return lines.map(function(text,i){return{time:i*(dur/lines.length),text:text};});}
 
 function beginKaraoke(){
   if(!lyrics.length)return;
   document.getElementById('k-title').textContent=song.title;
   document.getElementById('k-artist').textContent=song.artist||'';
-  buildDOM();
-  show('karaoke');
-  autoScrollEnabled=true;
+  buildDOM();show('karaoke');autoScrollEnabled=true;
   kStart=performance.now();pausedAt=0;paused=false;
   document.getElementById('btn-pp').textContent='⏸';
-  stopTimer();
-  kTimer=setInterval(tick,80);
+  stopTimer();kTimer=setInterval(tick,80);
 }
 function buildDOM(){
-  var c=document.getElementById('lyrics-box');
-  c.innerHTML='';
+  var c=document.getElementById('lyrics-box');c.innerHTML='';
   lyrics.forEach(function(line){
     var el=document.createElement('div');el.className='ll';el.textContent=line.text;
-    var t=line.time;
-    el.addEventListener('click',function(){autoScrollEnabled=true;seekK(t);});
+    var t=line.time;el.addEventListener('click',function(){autoScrollEnabled=true;seekK(t);});
     c.appendChild(el);
   });
 }
 function tick(){if(paused)return;updateAt(performance.now()-kStart);}
 function updateAt(ms){
-  var lines=document.querySelectorAll('.ll');
-  var active=-1;
+  var lines=document.querySelectorAll('.ll');var active=-1;
   for(var i=lyrics.length-1;i>=0;i--){if(ms>=lyrics[i].time){active=i;break;}}
-  lines.forEach(function(el,i){
-    el.classList.remove('active','past','next');
-    if(i<active)el.classList.add('past');
-    else if(i===active)el.classList.add('active');
-    else if(i===active+1)el.classList.add('next');
-  });
-  if(autoScrollEnabled&&active>=0&&lines[active]){
-    var win=document.getElementById('lyrics-win');
-    var lel=lines[active];
-    var target=lel.offsetTop-(win.clientHeight/2)+(lel.offsetHeight/2);
-    win.scrollTo({top:Math.max(0,target),behavior:'smooth'});
-  }
+  lines.forEach(function(el,i){el.classList.remove('active','past','next');if(i<active)el.classList.add('past');else if(i===active)el.classList.add('active');else if(i===active+1)el.classList.add('next');});
+  if(autoScrollEnabled&&active>=0&&lines[active]){var win=document.getElementById('lyrics-win');var lel=lines[active];var target=lel.offsetTop-(win.clientHeight/2)+(lel.offsetHeight/2);win.scrollTo({top:Math.max(0,target),behavior:'smooth'});}
   var total=totalMs();
   document.getElementById('prog-fill').style.width=Math.min(100,(ms/total)*100)+'%';
   document.getElementById('t-cur').textContent=fmt(ms);
@@ -420,17 +334,8 @@ function updateAt(ms){
 function totalMs(){return lyrics.length?lyrics[lyrics.length-1].time+5000:1;}
 function fmt(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function stopTimer(){if(kTimer){clearInterval(kTimer);kTimer=null;}}
-function togglePause(){
-  if(paused){kStart=performance.now()-pausedAt;paused=false;document.getElementById('btn-pp').textContent='⏸';}
-  else{pausedAt=performance.now()-kStart;paused=true;document.getElementById('btn-pp').textContent='▶';}
-}
-function restartK(){
-  autoScrollEnabled=true;
-  kStart=performance.now();pausedAt=0;paused=false;
-  document.getElementById('btn-pp').textContent='⏸';
-  document.getElementById('lyrics-win').scrollTo({top:0,behavior:'smooth'});
-  updateAt(0);
-}
+function togglePause(){if(paused){kStart=performance.now()-pausedAt;paused=false;document.getElementById('btn-pp').textContent='⏸';}else{pausedAt=performance.now()-kStart;paused=true;document.getElementById('btn-pp').textContent='▶';}}
+function restartK(){autoScrollEnabled=true;kStart=performance.now();pausedAt=0;paused=false;document.getElementById('btn-pp').textContent='⏸';document.getElementById('lyrics-win').scrollTo({top:0,behavior:'smooth'});updateAt(0);}
 function seekK(ms){kStart=performance.now()-ms;pausedAt=ms;updateAt(ms);}
 </script>
 </body>
