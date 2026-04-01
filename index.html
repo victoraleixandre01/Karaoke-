@@ -61,13 +61,10 @@ body { background: #f8f7f5; }
 .btn-p:active { background: #6d28d9; }
 .btn-s { padding: 0.95rem 2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ddd; color: #666; font-size: 1rem; cursor: pointer; -webkit-appearance: none; }
 .btn-s:active { background: #f5f5f5; }
-
-/* KARAOKE */
 #screen-karaoke { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; flex-direction: column;
   background: radial-gradient(ellipse at 0% 100%, rgba(124,58,237,0.05) 0%, transparent 50%), #fafaf9;
 }
 #screen-karaoke.active { display: flex; }
-
 #k-hdr {
   display: grid; grid-template-columns: auto 1fr auto;
   align-items: center; gap: 10px;
@@ -80,20 +77,12 @@ body { background: #f8f7f5; }
 .k-song { display: flex; flex-direction: column; align-items: center; min-width: 0; }
 .k-song .kt { font-size: 1.05rem; font-weight: 800; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
 .k-song .ka { font-size: 0.82rem; color: #888; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
-
-/* Botones — todos pills iguales */
 .k-btns { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
 .k-btns button {
-  height: 40px;
-  min-width: 40px;
-  padding: 0 12px;
-  border-radius: 20px;
-  border: none;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #fff;
-  cursor: pointer;
-  -webkit-appearance: none;
+  height: 40px; min-width: 40px; padding: 0 12px;
+  border-radius: 20px; border: none;
+  font-size: 1rem; font-weight: 700; color: #fff;
+  cursor: pointer; -webkit-appearance: none;
   display: flex; align-items: center; justify-content: center;
 }
 .k-btns button:active { opacity: 0.7; transform: scale(0.95); }
@@ -109,11 +98,9 @@ body { background: #f8f7f5; }
   font-size: 0.8rem; font-weight: 800; color: #555;
   display: flex; align-items: center; justify-content: center;
 }
-
 #lyrics-win { flex: 1; width: 100%; overflow: hidden; position: relative; touch-action: pan-y; }
 #lyrics-box { position: absolute; left: 0; right: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 0 1.5rem; will-change: transform; }
 .ll { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 600; text-align: center; color: #111; line-height: 1.4; padding: 0.1rem 0.5rem; cursor: pointer; user-select: none; width: 100%; }
-
 #k-ftr { padding: 0.65rem 1rem; width: 100%; flex-shrink: 0; background: rgba(255,255,255,0.9); border-top: 1px solid rgba(0,0,0,0.07); z-index: 10; }
 #prog-track { width: 100%; height: 5px; background: #e5e5e5; border-radius: 3px; cursor: pointer; touch-action: none; }
 #prog-fill { height: 100%; background: #7c3aed; border-radius: 3px; width: 0%; pointer-events: none; }
@@ -126,10 +113,10 @@ body { background: #f8f7f5; }
   <div class="logo">Karaoke <span>Vic</span></div>
   <div class="tagline">canta con tus amigos</div>
   <button id="btn-start">🎤 Escuchar la canción</button>
-  <div class="or-line">— o busca por título o artista —</div>
+  <div class="or-line">— o busca por título, artista o letra —</div>
   <div class="search-box">
-    <input id="manual-input" type="text" placeholder='ej: "Sabina" o "No dudaría Antonio Flores"' autocomplete="off" autocorrect="off" spellcheck="false" />
-    <div class="search-hint">Título, artista, o ambos juntos</div>
+    <input id="manual-input" type="text" placeholder='ej: "sentados en corro" o "Sabina"' autocomplete="off" autocorrect="off" spellcheck="false" />
+    <div class="search-hint">Título, artista, o cualquier fragmento de la letra</div>
     <div id="results-list"></div>
     <button id="btn-manual">🔍 Buscar</button>
   </div>
@@ -189,6 +176,7 @@ body { background: #f8f7f5; }
 
 <script>
 'use strict';
+var GENIUS_TOKEN = 'jfkNtTRwuJWuF48x0xlZ8OVX5BwSjOdgGpywUOGbL0EsQsiPu_M4rhYm-71w98g5';
 var song=null,lyrics=[],kTimer=null,kStart=0,paused=false,pausedAt=0;
 var mediaRec=null,chunks=[],cntTmr=null;
 var currentY=0,targetY=0,manualOffset=0,userScrolling=false,touchStartY=0;
@@ -217,6 +205,10 @@ function itemScore(item,queryArtist){
   if(queryArtist&&norm(a).indexOf(norm(queryArtist))!==-1)s-=40;
   if(!item.syncedLyrics)s+=5;
   return s;
+}
+function isSecondary(item){
+  var t=item.trackName||'';
+  return /live|directo|acoustic|acustic|remaster|remix|maqueta|demo/i.test(t)||/feat\.|ft\./i.test(t);
 }
 
 (function(){var wf=document.getElementById('waveform');for(var i=0;i<22;i++){var b=document.createElement('div');b.className='bar';b.style.animationDelay=(i*0.05)+'s';wf.appendChild(b);}})();
@@ -286,69 +278,116 @@ function recognizeAudio(stream){
     .catch(function(){setMsg('listen-msg','⚠️ Error de red.','msg');setTimeout(function(){show('idle');},3000);});
 }
 
+// ── Búsqueda principal ──
 function manualSearch(){
   var val=document.getElementById('manual-input').value.trim();
   if(!val){setMsg('idle-msg','Escribe algo para buscar.');return;}
   setMsg('idle-msg','Buscando…','info');
   document.getElementById('results-list').style.display='none';
+  document.getElementById('results-list').innerHTML='';
 
-  fetch('https://lrclib.net/api/search?q='+encodeURIComponent(val),{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
+  // Primero intentar LRCLIB
+  searchLrclib(val).then(function(handled){
+    if(!handled){
+      // No encontrado en LRCLIB → buscar en Genius por fragmento de letra
+      setMsg('idle-msg','Buscando en base de datos de letras…','info');
+      searchGenius(val).then(function(geniusResults){
+        if(!geniusResults||geniusResults.length===0){
+          setMsg('idle-msg','No encontrado. Prueba con el título de la canción.');
+        } else if(geniusResults.length===1){
+          // Resultado único de Genius → ir directo
+          var g=geniusResults[0];
+          setMsg('idle-msg','');
+          showFoundAndLoad(g.title,g.artist,null);
+        } else {
+          // Varios resultados de Genius → mostrar lista
+          showGeniusList(geniusResults);
+        }
+      });
+    }
+  });
+}
+
+function searchLrclib(val){
+  var parts=val.split(/\s*[·\-]\s*/);
+  var queryArtist=parts.length>1?parts[parts.length-1]:'';
+  return fetch('https://lrclib.net/api/search?q='+encodeURIComponent(val),{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
     .then(function(r){return r.ok?r.json():[];})
     .then(function(arr){
-      if(!arr||arr.length===0){setMsg('idle-msg','No encontrado.');return;}
-      setMsg('idle-msg','');
+      if(!arr||arr.length===0)return false;
 
-      // Detectar si la búsqueda es solo un artista (sin título claro)
-      // Si más de la mitad de los resultados comparten el mismo artista → es búsqueda por artista
       var normVal=norm(val);
       var artistMatches=arr.filter(function(item){return norm(item.artistName||'').indexOf(normVal)!==-1;});
       var isArtistSearch=(artistMatches.length>=arr.length*0.4);
 
       if(isArtistSearch){
-        // Mostrar lista de canciones de ese artista para elegir
-        // Deduplicar por título
         var seen={};var deduped=[];
         arr.forEach(function(item){
           var key=norm(item.trackName||'');
           if(!seen[key]&&!isSecondary(item)){seen[key]=true;deduped.push(item);}
         });
-        // Si no hay suficientes sin filtrar, añadir las secundarias también
         if(deduped.length<3){
-          arr.forEach(function(item){
-            var key=norm(item.trackName||'');
-            if(!seen[key]){seen[key]=true;deduped.push(item);}
-          });
+          arr.forEach(function(item){var key=norm(item.trackName||'');if(!seen[key]){seen[key]=true;deduped.push(item);}});
         }
         showResultsList(deduped.slice(0,8));
-      } else {
-        // Búsqueda por título — elegir la mejor automáticamente
-        var parts=val.split(/\s*[·\-]\s*/);
-        var queryArtist=parts.length>1?parts[parts.length-1]:'';
-        arr.sort(function(a,b){return itemScore(a,queryArtist)-itemScore(b,queryArtist);});
-        var best=arr[0],second=arr[1];
-        var diff=second?(itemScore(second,queryArtist)-itemScore(best,queryArtist)):999;
-        if(diff<8&&second&&norm(best.trackName||'')===norm(second.trackName||'')&&norm(best.artistName||'')!==norm(second.artistName||'')){
-          showResultsList(arr.slice(0,5));
-        } else {
-          selectResult(best);
-        }
+        return true;
       }
+
+      arr.sort(function(a,b){return itemScore(a,queryArtist)-itemScore(b,queryArtist);});
+      var best=arr[0],second=arr[1];
+      var diff=second?(itemScore(second,queryArtist)-itemScore(best,queryArtist)):999;
+      if(diff<8&&second&&norm(best.trackName||'')===norm(second.trackName||'')&&norm(best.artistName||'')!==norm(second.artistName||'')){
+        showResultsList(arr.slice(0,5));
+      } else {
+        selectResult(best);
+      }
+      return true;
     })
-    .catch(function(){setMsg('idle-msg','⚠️ Error de red.');});
+    .catch(function(){return false;});
 }
 
-function isSecondary(item){
-  var t=item.trackName||'';
-  return /live|directo|acoustic|acustic|remaster|remix|maqueta|demo/i.test(t)||/feat\.|ft\./i.test(t);
+// ── Genius search ──
+function searchGenius(query){
+  var url='https://api.genius.com/search?q='+encodeURIComponent(query)+'&per_page=8';
+  return fetch(url,{headers:{'Authorization':'Bearer '+GENIUS_TOKEN}})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(data){
+      if(!data||!data.response||!data.response.hits)return [];
+      return data.response.hits
+        .filter(function(h){return h.type==='song';})
+        .map(function(h){
+          return {
+            title: h.result.title,
+            artist: h.result.primary_artist.name,
+            id: h.result.id
+          };
+        });
+    })
+    .catch(function(){return [];});
+}
+
+function showGeniusList(results){
+  setMsg('idle-msg','Elige la canción:','info');
+  var list=document.getElementById('results-list');list.innerHTML='';
+  results.forEach(function(item){
+    var div=document.createElement('div');div.className='result-item';
+    var t=document.createElement('div');t.className='result-title';t.textContent=item.title;
+    var a=document.createElement('div');a.className='result-artist';a.textContent=item.artist;
+    div.appendChild(t);div.appendChild(a);
+    div.addEventListener('click',function(){
+      list.style.display='none';setMsg('idle-msg','');
+      showFoundAndLoad(item.title,item.artist,null);
+    });
+    list.appendChild(div);
+  });
+  list.style.display='block';
 }
 
 function showResultsList(arr){
   var seen={},deduped=[];
-  arr.forEach(function(item){
-    var key=norm(item.trackName||'')+'||'+norm(item.artistName||'');
-    if(!seen[key]){seen[key]=true;deduped.push(item);}
-  });
+  arr.forEach(function(item){var key=norm(item.trackName||'')+'||'+norm(item.artistName||'');if(!seen[key]){seen[key]=true;deduped.push(item);}});
   if(deduped.length===1){selectResult(deduped[0]);return;}
+  setMsg('idle-msg','Elige la canción:','info');
   var list=document.getElementById('results-list');list.innerHTML='';
   deduped.forEach(function(item){
     var div=document.createElement('div');div.className='result-item';
@@ -359,7 +398,6 @@ function showResultsList(arr){
     list.appendChild(div);
   });
   list.style.display='block';
-  setMsg('idle-msg','Elige una canción:','info');
 }
 
 function selectResult(item){
@@ -373,22 +411,33 @@ function showFoundAndLoad(title,artist,lrcId){
   document.getElementById('loading-lyrics').style.display='flex';
   document.getElementById('found-btns').style.display='none';
   setMsg('found-msg','');show('found');
+  song={title:title,artist:artist};
   fetchLyrics(lrcId)
     .then(function(result){
       document.getElementById('loading-lyrics').style.display='none';
-      if(!result||result.length===0){setMsg('found-msg','⚠️ No se encontró letra.');document.getElementById('found-btns').style.display='flex';return;}
+      if(!result||result.length===0){setMsg('found-msg','⚠️ No se encontró letra sincronizada.');document.getElementById('found-btns').style.display='flex';return;}
       lyrics=result;beginKaraoke();
     })
     .catch(function(){document.getElementById('loading-lyrics').style.display='none';setMsg('found-msg','⚠️ Error de red.');document.getElementById('found-btns').style.display='flex';});
 }
 function fetchLyrics(lrcId){
-  var url=lrcId?'https://lrclib.net/api/get/'+lrcId:'https://lrclib.net/api/search?q='+encodeURIComponent((song.title||'')+' '+(song.artist||''));
-  return fetch(url,{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
-    .then(function(r){return r.ok?r.json():null;})
-    .then(function(d){
-      if(!d)return null;
-      if(lrcId){if(d.syncedLyrics)return parseLRC(d.syncedLyrics);if(d.plainLyrics)return buildPlain(d.plainLyrics);return null;}
-      var arr=Array.isArray(d)?d:[];
+  if(lrcId&&typeof lrcId==='number'){
+    return fetch('https://lrclib.net/api/get/'+lrcId,{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(d){
+        if(d&&d.syncedLyrics)return parseLRC(d.syncedLyrics);
+        if(d&&d.plainLyrics)return buildPlain(d.plainLyrics);
+        return searchLrclibForLyrics();
+      });
+  }
+  return searchLrclibForLyrics();
+}
+function searchLrclibForLyrics(){
+  var q=encodeURIComponent(song.title+(song.artist?' '+song.artist:''));
+  return fetch('https://lrclib.net/api/search?q='+q,{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
+    .then(function(r){return r.ok?r.json():[];})
+    .then(function(arr){
+      if(!arr||!arr.length)return null;
       arr.sort(function(a,b){return itemScore(a,song.artist)-itemScore(b,song.artist);});
       for(var i=0;i<arr.length;i++){if(arr[i].syncedLyrics)return parseLRC(arr[i].syncedLyrics);}
       for(var j=0;j<arr.length;j++){if(arr[j].plainLyrics)return buildPlain(arr[j].plainLyrics);}
@@ -432,12 +481,10 @@ function updateAt(ms){
   if(!userScrolling){
     var win=document.getElementById('lyrics-win');
     var winH=win.clientHeight;
-    if(active<0){
-      targetY=0;
-    } else {
+    if(active<0){targetY=0;}
+    else{
       var lineTop=lineOffsets[active]!==undefined?lineOffsets[active]:lines[active].offsetTop;
-      var lineH=lines[active].offsetHeight;
-      targetY=-(lineTop-winH/2+lineH/2);
+      targetY=-(lineTop-winH/2+lines[active].offsetHeight/2);
       if(targetY>0)targetY=0;
     }
     currentY+=(targetY-currentY)*0.15;
