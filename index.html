@@ -8,22 +8,26 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111; overflow: hidden; }
 body { background: #f8f7f5; }
-.screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh; min-height: 100dvh; padding: 2rem 1.5rem; gap: 1.6rem; }
+.screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh; min-height: 100dvh; padding: 2rem 1.5rem; gap: 1.4rem; }
 .screen.active { display: flex; }
 #screen-idle, #screen-listening, #screen-found {
   background: radial-gradient(ellipse at 20% 80%, rgba(124,58,237,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(124,58,237,0.04) 0%, transparent 60%), #f8f7f5;
 }
 .logo { font-size: clamp(4rem, 16vw, 9rem); font-weight: 800; letter-spacing: -4px; color: #111; line-height: 1; }
 .logo span { color: #7c3aed; }
-.tagline { font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase; color: #999; text-align: center; }
+.tagline { font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; color: #999; text-align: center; }
 #btn-start { width: 100%; max-width: 480px; padding: 1.5rem 2rem; border-radius: 50px; background: #7c3aed; border: none; color: #fff; font-size: 1.4rem; font-weight: 700; cursor: pointer; -webkit-appearance: none; }
 #btn-start:active { background: #6d28d9; }
 .or-line { color: #ccc; font-size: 0.85rem; }
 .search-box { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 10px; }
-.search-box input { width: 100%; padding: 1.1rem 1.2rem; border-radius: 16px; background: #fff; border: 1.5px solid #e5e5e5; color: #111; font-size: 1.1rem; outline: none; -webkit-appearance: none; }
+.search-label { font-size: 1.1rem; font-weight: 700; color: #111; text-align: center; }
+.search-box input {
+  width: 100%; padding: 1.2rem 1.3rem; border-radius: 16px;
+  background: #fff; border: 2px solid #e5e5e5; color: #111;
+  font-size: 1.2rem; outline: none; -webkit-appearance: none;
+}
 .search-box input::placeholder { color: #bbb; }
 .search-box input:focus { border-color: #7c3aed; }
-.search-hint { font-size: 0.75rem; color: #aaa; text-align: center; line-height: 1.5; }
 .search-box > button { width: 100%; padding: 1.2rem 1.2rem; border-radius: 16px; background: #111; border: none; color: #fff; font-size: 1.2rem; font-weight: 700; cursor: pointer; -webkit-appearance: none; }
 .search-box > button:active { background: #333; }
 .msg { font-size: 0.88rem; color: #e53e3e; text-align: center; min-height: 1.1em; line-height: 1.5; max-width: 380px; }
@@ -111,12 +115,12 @@ body { background: #f8f7f5; }
 
 <div id="screen-idle" class="screen active">
   <div class="logo">Karaoke <span>Vic</span></div>
-  <div class="tagline">canta con tus amigos</div>
+  <div class="tagline">que el fin del mundo nos pille cantando</div>
   <button id="btn-start">🎤 Escuchar la canción</button>
-  <div class="or-line">— o busca por título, artista o letra —</div>
+  <div class="or-line">— o busca manualmente —</div>
   <div class="search-box">
-    <input id="manual-input" type="text" placeholder='ej: "sentados en corro" o "Sabina"' autocomplete="off" autocorrect="off" spellcheck="false" />
-    <div class="search-hint">Título, artista, o cualquier fragmento de la letra</div>
+    <div class="search-label">¿Qué canción quieres cantar?</div>
+    <input id="manual-input" type="text" placeholder='título, artista o fragmento de letra' autocomplete="off" autocorrect="off" spellcheck="false" />
     <div id="results-list"></div>
     <button id="btn-manual">🔍 Buscar</button>
   </div>
@@ -176,7 +180,7 @@ body { background: #f8f7f5; }
 
 <script>
 'use strict';
-var GENIUS_TOKEN = 'jfkNtTRwuJWuF48x0xlZ8OVX5BwSjOdgGpywUOGbL0EsQsiPu_M4rhYm-71w98g5';
+var GENIUS_TOKEN='jfkNtTRwuJWuF48x0xlZ8OVX5BwSjOdgGpywUOGbL0EsQsiPu_M4rhYm-71w98g5';
 var song=null,lyrics=[],kTimer=null,kStart=0,paused=false,pausedAt=0;
 var mediaRec=null,chunks=[],cntTmr=null;
 var currentY=0,targetY=0,manualOffset=0,userScrolling=false,touchStartY=0;
@@ -184,10 +188,7 @@ var SPEED_STEPS=[0.5,0.65,0.8,1.0,1.25,1.5,2.0];
 var speedIdx=3;
 var lineOffsets=[];
 
-function show(n){
-  ['idle','listening','found'].forEach(function(id){document.getElementById('screen-'+id).classList.toggle('active',id===n);});
-  document.getElementById('screen-karaoke').classList.toggle('active',n==='karaoke');
-}
+function show(n){['idle','listening','found'].forEach(function(id){document.getElementById('screen-'+id).classList.toggle('active',id===n);});document.getElementById('screen-karaoke').classList.toggle('active',n==='karaoke');}
 function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el.textContent=text;el.className='msg'+(cls?' '+cls:'');}
 function applyY(y){document.getElementById('lyrics-box').style.transform='translateY('+y+'px)';}
 function getSpeed(){return SPEED_STEPS[speedIdx];}
@@ -206,10 +207,7 @@ function itemScore(item,queryArtist){
   if(!item.syncedLyrics)s+=5;
   return s;
 }
-function isSecondary(item){
-  var t=item.trackName||'';
-  return /live|directo|acoustic|acustic|remaster|remix|maqueta|demo/i.test(t)||/feat\.|ft\./i.test(t);
-}
+function isSecondary(item){var t=item.trackName||'';return /live|directo|acoustic|acustic|remaster|remix|maqueta|demo/i.test(t)||/feat\.|ft\./i.test(t);}
 
 (function(){var wf=document.getElementById('waveform');for(var i=0;i<22;i++){var b=document.createElement('div');b.className='bar';b.style.animationDelay=(i*0.05)+'s';wf.appendChild(b);}})();
 
@@ -278,7 +276,6 @@ function recognizeAudio(stream){
     .catch(function(){setMsg('listen-msg','⚠️ Error de red.','msg');setTimeout(function(){show('idle');},3000);});
 }
 
-// ── Búsqueda principal ──
 function manualSearch(){
   var val=document.getElementById('manual-input').value.trim();
   if(!val){setMsg('idle-msg','Escribe algo para buscar.');return;}
@@ -286,22 +283,17 @@ function manualSearch(){
   document.getElementById('results-list').style.display='none';
   document.getElementById('results-list').innerHTML='';
 
-  // Primero intentar LRCLIB
-  searchLrclib(val).then(function(handled){
-    if(!handled){
-      // No encontrado en LRCLIB → buscar en Genius por fragmento de letra
-      setMsg('idle-msg','Buscando en base de datos de letras…','info');
-      searchGenius(val).then(function(geniusResults){
-        if(!geniusResults||geniusResults.length===0){
+  searchLrclib(val).then(function(found){
+    if(!found){
+      setMsg('idle-msg','Buscando en letras…','info');
+      searchGenius(val).then(function(results){
+        if(!results||results.length===0){
           setMsg('idle-msg','No encontrado. Prueba con el título de la canción.');
-        } else if(geniusResults.length===1){
-          // Resultado único de Genius → ir directo
-          var g=geniusResults[0];
+        } else if(results.length===1){
           setMsg('idle-msg','');
-          showFoundAndLoad(g.title,g.artist,null);
+          showFoundAndLoad(results[0].title,results[0].artist,null);
         } else {
-          // Varios resultados de Genius → mostrar lista
-          showGeniusList(geniusResults);
+          showGeniusList(results);
         }
       });
     }
@@ -315,24 +307,16 @@ function searchLrclib(val){
     .then(function(r){return r.ok?r.json():[];})
     .then(function(arr){
       if(!arr||arr.length===0)return false;
-
       var normVal=norm(val);
       var artistMatches=arr.filter(function(item){return norm(item.artistName||'').indexOf(normVal)!==-1;});
       var isArtistSearch=(artistMatches.length>=arr.length*0.4);
-
       if(isArtistSearch){
         var seen={};var deduped=[];
-        arr.forEach(function(item){
-          var key=norm(item.trackName||'');
-          if(!seen[key]&&!isSecondary(item)){seen[key]=true;deduped.push(item);}
-        });
-        if(deduped.length<3){
-          arr.forEach(function(item){var key=norm(item.trackName||'');if(!seen[key]){seen[key]=true;deduped.push(item);}});
-        }
+        arr.forEach(function(item){var key=norm(item.trackName||'');if(!seen[key]&&!isSecondary(item)){seen[key]=true;deduped.push(item);}});
+        if(deduped.length<3){arr.forEach(function(item){var key=norm(item.trackName||'');if(!seen[key]){seen[key]=true;deduped.push(item);}});}
         showResultsList(deduped.slice(0,8));
         return true;
       }
-
       arr.sort(function(a,b){return itemScore(a,queryArtist)-itemScore(b,queryArtist);});
       var best=arr[0],second=arr[1];
       var diff=second?(itemScore(second,queryArtist)-itemScore(best,queryArtist)):999;
@@ -346,22 +330,19 @@ function searchLrclib(val){
     .catch(function(){return false;});
 }
 
-// ── Genius search ──
 function searchGenius(query){
-  var url='https://api.genius.com/search?q='+encodeURIComponent(query)+'&per_page=8';
-  return fetch(url,{headers:{'Authorization':'Bearer '+GENIUS_TOKEN}})
+  // Usar allorigins como proxy para evitar CORS
+  var apiUrl='https://api.genius.com/search?q='+encodeURIComponent(query)+'&per_page=8';
+  var proxyUrl='https://api.allorigins.win/get?url='+encodeURIComponent(apiUrl);
+  return fetch(proxyUrl,{headers:{'Authorization':'Bearer '+GENIUS_TOKEN}})
     .then(function(r){return r.ok?r.json():null;})
-    .then(function(data){
+    .then(function(proxy){
+      if(!proxy||!proxy.contents)return [];
+      var data=JSON.parse(proxy.contents);
       if(!data||!data.response||!data.response.hits)return [];
       return data.response.hits
         .filter(function(h){return h.type==='song';})
-        .map(function(h){
-          return {
-            title: h.result.title,
-            artist: h.result.primary_artist.name,
-            id: h.result.id
-          };
-        });
+        .map(function(h){return{title:h.result.title,artist:h.result.primary_artist.name};});
     })
     .catch(function(){return [];});
 }
@@ -374,10 +355,7 @@ function showGeniusList(results){
     var t=document.createElement('div');t.className='result-title';t.textContent=item.title;
     var a=document.createElement('div');a.className='result-artist';a.textContent=item.artist;
     div.appendChild(t);div.appendChild(a);
-    div.addEventListener('click',function(){
-      list.style.display='none';setMsg('idle-msg','');
-      showFoundAndLoad(item.title,item.artist,null);
-    });
+    div.addEventListener('click',function(){list.style.display='none';setMsg('idle-msg','');showFoundAndLoad(item.title,item.artist,null);});
     list.appendChild(div);
   });
   list.style.display='block';
@@ -406,12 +384,12 @@ function selectResult(item){
   showFoundAndLoad(song.title,song.artist,item.id);
 }
 function showFoundAndLoad(title,artist,lrcId){
+  song={title:title,artist:artist||''};
   document.getElementById('found-title').textContent=title;
   document.getElementById('found-artist').textContent=artist||'';
   document.getElementById('loading-lyrics').style.display='flex';
   document.getElementById('found-btns').style.display='none';
   setMsg('found-msg','');show('found');
-  song={title:title,artist:artist};
   fetchLyrics(lrcId)
     .then(function(result){
       document.getElementById('loading-lyrics').style.display='none';
@@ -479,8 +457,7 @@ function updateAt(ms){
   for(var i=lyrics.length-1;i>=0;i--){if(effectiveMs>=lyrics[i].time){active=i;break;}}
   lines.forEach(function(el,i){el.classList.remove('active','past','next');if(i<active)el.classList.add('past');else if(i===active)el.classList.add('active');else if(i===active+1)el.classList.add('next');});
   if(!userScrolling){
-    var win=document.getElementById('lyrics-win');
-    var winH=win.clientHeight;
+    var win=document.getElementById('lyrics-win');var winH=win.clientHeight;
     if(active<0){targetY=0;}
     else{
       var lineTop=lineOffsets[active]!==undefined?lineOffsets[active]:lines[active].offsetTop;
