@@ -19,30 +19,18 @@ body { background: #f8f7f5; }
 .tagline { font-size: clamp(0.75rem, 2.2vw, 1rem); letter-spacing: 3px; text-transform: uppercase; color: #888; text-align: center; font-weight: 600; }
 
 /* Buscador PRIMERO y más grande */
-.search-box { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 10px; }
-.search-label { font-size: 1.3rem; font-weight: 800; color: #111; text-align: center; }
-.search-box input {
-  width: 100%; padding: 1.3rem 1.4rem; border-radius: 18px;
-  background: #fff; border: 2px solid #e0e0e0; color: #111;
-  font-size: 1.2rem; outline: none; -webkit-appearance: none;
-}
-.search-box input::placeholder { color: #bbb; }
-.search-box input:focus { border-color: #7c3aed; }
-.search-box > button.search-btn {
-  width: 100%; padding: 1.3rem; border-radius: 18px;
-  background: #111; border: none; color: #fff;
-  font-size: 1.2rem; font-weight: 700; cursor: pointer; -webkit-appearance: none;
-}
-.search-box > button.search-btn:active { background: #333; }
 
-.or-line { color: #ccc; font-size: 0.85rem; }
-#btn-start {
-  width: 100%; max-width: 520px; padding: 1.1rem 2rem;
-  border-radius: 50px; background: rgba(124,58,237,0.12);
-  border: 2px solid rgba(124,58,237,0.3); color: #7c3aed;
-  font-size: 1.1rem; font-weight: 700; cursor: pointer; -webkit-appearance: none;
-}
-#btn-start:active { background: rgba(124,58,237,0.2); }
+
+
+
+
+
+
+
+
+
+
+
 
 .msg { font-size: 0.88rem; color: #e53e3e; text-align: center; min-height: 1.1em; line-height: 1.5; max-width: 400px; }
 .msg.ok { color: #38a169; }
@@ -53,6 +41,62 @@ body { background: #f8f7f5; }
 .result-item:active { background: #f9f8ff; }
 .result-title { font-weight: 700; font-size: 0.95rem; color: #111; }
 .result-artist { font-size: 0.8rem; color: #888; margin-top: 2px; }
+
+
+
+}
+
+
+/* ── HOME GRID ── */
+.home-grid {
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: row;
+  gap: 2.5rem;
+  width: 100%;
+  max-width: 900px;
+  align-items: flex-start;
+}
+.home-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+.home-label { font-size: 1.25rem; font-weight: 800; color: #111; }
+.home-left input {
+  width: 100%; padding: 1.1rem 1.2rem; border-radius: 16px;
+  background: #fff; border: 2px solid #e0e0e0; color: #111;
+  font-size: 1.1rem; outline: none; -webkit-appearance: none;
+}
+.home-left input::placeholder { color: #bbb; }
+.home-left input:focus { border-color: #7c3aed; }
+#btn-manual {
+  width: 100%; padding: 1.1rem; border-radius: 16px;
+  background: #111; border: none; color: #fff;
+  font-size: 1.1rem; font-weight: 700; cursor: pointer; -webkit-appearance: none;
+}
+#btn-manual:active { background: #333; }
+
+.home-right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+  padding-top: 2.6rem;
+}
+.home-right button {
+  width: 100%; padding: 1.2rem 1.5rem; border-radius: 50px;
+  font-size: 1.1rem; font-weight: 700; cursor: pointer;
+  -webkit-appearance: none; border: 2px solid;
+  display: block;
+}
+.home-right button:active { opacity: 0.8; transform: scale(0.98); }
+#btn-repertorio { background: rgba(22,163,74,0.1); border-color: rgba(22,163,74,0.4); color: #16a34a; }
+#btn-random     { background: rgba(37,99,235,0.1); border-color: rgba(37,99,235,0.4); color: #2563eb; }
+#btn-start      { background: rgba(124,58,237,0.1); border-color: rgba(124,58,237,0.4); color: #7c3aed; }
 
 /* ESCUCHANDO */
 .pulse-wrap { position: relative; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -134,18 +178,19 @@ body { background: #f8f7f5; }
 <div id="screen-idle" class="screen active">
   <div class="logo">Karaoke <span>Vic</span></div>
   <div class="tagline">que el fin del mundo nos pille cantando</div>
-
-  <!-- BUSCADOR PRIMERO -->
-  <div class="search-box">
-    <div class="search-label">¿Qué canción quieres cantar?</div>
-    <input id="manual-input" type="text" placeholder='título, artista o fragmento de letra' autocomplete="off" autocorrect="off" spellcheck="false" />
-    <div id="results-list"></div>
-    <button class="search-btn" id="btn-manual">🔍 Buscar</button>
+  <div class="home-grid">
+    <div class="home-left">
+      <div class="home-label">¿Qué canción quieres cantar?</div>
+      <input id="manual-input" type="text" placeholder="título, artista o fragmento de letra" autocomplete="off" autocorrect="off" spellcheck="false" />
+      <div id="results-list"></div>
+      <button id="btn-manual">🔍 Buscar</button>
+    </div>
+    <div class="home-right">
+      <button id="btn-repertorio">🎵 Repertorio</button>
+      <button id="btn-random">🎲 Canción random</button>
+      <button id="btn-start">🎤 Escuchar canción</button>
+    </div>
   </div>
-
-  <div class="or-line">— o deja que te escuche —</div>
-  <button id="btn-start">🎤 Escuchar la canción</button>
-
   <p id="idle-msg" class="msg"></p>
 </div>
 
@@ -202,6 +247,104 @@ body { background: #f8f7f5; }
 
 <script>
 'use strict';
+
+var REPERTORIO = [
+  { title: "Amores De Barra", artist: "Ella Baila Sola" },
+  { title: "Ana", artist: "Ismael Serrano" },
+  { title: "Antología", artist: "Shakira" },
+  { title: "Asturias", artist: "Víctor Manuel" },
+  { title: "Bosanova", artist: "Estopa" },
+  { title: "Burbujas De Amor", artist: "Juan Luis Guerra" },
+  { title: "Cacho A Cacho", artist: "Estopa" },
+  { title: "Carbón Y Ramas", artist: "Manolo García" },
+  { title: "Chiapas", artist: "Tontxu" },
+  { title: "Como Camarón", artist: "Estopa" },
+  { title: "Como Hablar", artist: "Amaral" },
+  { title: "Como Si Fueras A Morir Mañana", artist: "Leiva" },
+  { title: "Contamíname", artist: "Pedro Guerra" },
+  { title: "Contigo Aprendí", artist: "" },
+  { title: "Contigo En La Distancia", artist: "" },
+  { title: "Cuentame Un Cuento", artist: "Celtas Cortos" },
+  { title: "Dibujos Animados", artist: "Pedro Guerra" },
+  { title: "Dos Gardenias", artist: "Antonio Machín" },
+  { title: "Dragón Rojo", artist: "Rozalén" },
+  { title: "Dueño De Mi Silencio", artist: "Jarabe De Palo" },
+  { title: "Echo De Menos", artist: "Kiko Veneno" },
+  { title: "Eclipse De Mar", artist: "Joaquín Sabina" },
+  { title: "El Blade", artist: "Estopa" },
+  { title: "El Marido De La Peluquera", artist: "Pedro Guerra" },
+  { title: "El Roce De Tu Piel", artist: "Revólver" },
+  { title: "El Sitio De Mi Recreo", artist: "Antonio Vega" },
+  { title: "El Universo Sobre Mi", artist: "Amaral" },
+  { title: "Entre Mis Recuerdos", artist: "Luz Casal" },
+  { title: "Guantanamera", artist: "" },
+  { title: "Hay Amores", artist: "Shakira" },
+  { title: "Hoy", artist: "Gloria Estefan" },
+  { title: "Lágrimas Negras", artist: "" },
+  { title: "Lazos", artist: "Pedro Guerra" },
+  { title: "Libre", artist: "Nino Bravo" },
+  { title: "Lía", artist: "Ana Belén" },
+  { title: "Llorona", artist: "" },
+  { title: "Lo Que Más", artist: "Shakira" },
+  { title: "Los Tontos", artist: "C. Tangana" },
+  { title: "Lucía", artist: "Joan Manuel Serrat" },
+  { title: "Madrid-Barcelona", artist: "Tontxu" },
+  { title: "Me Falta El Aliento", artist: "Estopa" },
+  { title: "Me Maten", artist: "C. Tangana" },
+  { title: "Mediterráneo", artist: "Joan Manuel Serrat" },
+  { title: "Mil Campanas", artist: "" },
+  { title: "Mujer Que No Tendré", artist: "Pedro Guerra" },
+  { title: "Nana De Lluvia", artist: "Carlos Núñez" },
+  { title: "No Me Importa Nada", artist: "Luz Casal" },
+  { title: "Pájaros De Portugal", artist: "Joaquín Sabina" },
+  { title: "Paisanajes", artist: "Joaquín Sabina" },
+  { title: "Papa Cuéntame", artist: "Ismael Serrano" },
+  { title: "Papá Cuéntame Otra Vez", artist: "Ismael Serrano" },
+  { title: "Para Los Dos", artist: "Rozalén" },
+  { title: "Pedro Navaja", artist: "Rubén Blades" },
+  { title: "Piensa En Mí", artist: "Luz Casal" },
+  { title: "Procuro Olvidarte", artist: "" },
+  { title: "Qué Fue Aquello", artist: "Tontxu" },
+  { title: "Resumiendo", artist: "Joaquín Sabina" },
+  { title: "Revolvió", artist: "Bebe" },
+  { title: "Rosita", artist: "Amaral" },
+  { title: "Sexual", artist: "La Casa Azul" },
+  { title: "Siempre Me Quedará", artist: "Bebe" },
+  { title: "Sin Ti No Soy Nada", artist: "Amaral" },
+  { title: "Suma Y Sigue", artist: "Estopa" },
+  { title: "Tacones Rojos", artist: "Sebastián Yatra" },
+  { title: "Tan Solo", artist: "Estopa" },
+  { title: "Tantas Cosas", artist: "Ismael Serrano" },
+  { title: "Te He Echado De Menos", artist: "Pablo Alborán" },
+  { title: "Toda Una Vida", artist: "Antonio Machín" },
+  { title: "Todavía Una Canción De Amor", artist: "Los Rodríguez" },
+  { title: "Torn", artist: "Natalie Imbruglia" },
+  { title: "Tu Calorro", artist: "Estopa" },
+  { title: "Turnedo", artist: "Iván Ferreiro" },
+  { title: "Un Beso Y Una Flor", artist: "Nino Bravo" },
+  { title: "Un Muchacho De Mi Edad", artist: "Pedro Guerra" },
+  { title: "Vine Del Norte", artist: "Ismael Serrano" },
+  { title: "Vis A Vis", artist: "Leiva" },
+  { title: "Volver", artist: "Carlos Gardel" },
+  { title: "You Know What I Mean", artist: "Phil Collins" },
+];
+
+
+
+document.getElementById('btn-random').addEventListener('click', function(){
+  var r = REPERTORIO[Math.floor(Math.random() * REPERTORIO.length)];
+  setMsg('idle-msg', '');
+  showFoundAndLoad(r.title, r.artist, null);
+});
+
+document.getElementById('btn-repertorio').addEventListener('click', function(){
+  setMsg('idle-msg','Elige una canción:','info');
+  showList(REPERTORIO.map(function(s){
+    return { trackName: s.title, artistName: s.artist };
+  }));
+});
+
+
 var GENIUS='jfkNtTRwuJWuF48x0xlZ8OVX5BwSjOdgGpywUOGbL0EsQsiPu_M4rhYm-71w98g5';
 var song=null,lyrics=[],kTimer=null,kStart=0,paused=false,pausedAt=0;
 var mediaRec=null,chunks=[],cntTmr=null;
