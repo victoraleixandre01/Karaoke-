@@ -48,55 +48,106 @@ body { background: #f8f7f5; }
 
 
 /* ── HOME GRID ── */
+.screen#screen-idle {
+  justify-content: flex-start;
+  padding: 1.5rem;
+  gap: 1rem;
+}
 .home-grid {
-  display: -webkit-flex;
   display: flex;
   flex-direction: row;
-  gap: 2.5rem;
+  gap: 2rem;
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
+  flex: 1;
   align-items: flex-start;
+  min-height: 0;
 }
 .home-left {
+  width: 280px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  flex: 1;
-  min-width: 0;
 }
-.home-label { font-size: 1.25rem; font-weight: 800; color: #111; }
+.home-label { font-size: 1.1rem; font-weight: 800; color: #111; }
 .home-left input {
-  width: 100%; padding: 1.1rem 1.2rem; border-radius: 16px;
+  width: 100%; padding: 1rem 1.1rem; border-radius: 14px;
   background: #fff; border: 2px solid #e0e0e0; color: #111;
-  font-size: 1.1rem; outline: none; -webkit-appearance: none;
+  font-size: 1rem; outline: none; -webkit-appearance: none;
 }
 .home-left input::placeholder { color: #bbb; }
 .home-left input:focus { border-color: #7c3aed; }
 #btn-manual {
-  width: 100%; padding: 1.1rem; border-radius: 16px;
+  width: 100%; padding: 1rem; border-radius: 14px;
   background: #111; border: none; color: #fff;
-  font-size: 1.1rem; font-weight: 700; cursor: pointer; -webkit-appearance: none;
+  font-size: 1rem; font-weight: 700; cursor: pointer; -webkit-appearance: none;
 }
 #btn-manual:active { background: #333; }
+#btn-random {
+  width: 100%; padding: 1rem; border-radius: 50px;
+  background: rgba(37,99,235,0.1); border: 2px solid rgba(37,99,235,0.4);
+  color: #2563eb; font-size: 1rem; font-weight: 700;
+  cursor: pointer; -webkit-appearance: none;
+}
+#btn-start {
+  width: 100%; padding: 1rem; border-radius: 50px;
+  background: rgba(124,58,237,0.1); border: 2px solid rgba(124,58,237,0.4);
+  color: #7c3aed; font-size: 1rem; font-weight: 700;
+  cursor: pointer; -webkit-appearance: none;
+}
+#btn-random:active, #btn-start:active { opacity: 0.8; }
 
+/* Panel repertorio derecho */
 .home-right {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
   flex: 1;
   min-width: 0;
-  padding-top: 2.6rem;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 20px;
+  border: 1.5px solid #e8e8e8;
+  overflow: hidden;
+  max-height: calc(100vh - 220px);
 }
-.home-right button {
-  width: 100%; padding: 1.2rem 1.5rem; border-radius: 50px;
-  font-size: 1.1rem; font-weight: 700; cursor: pointer;
-  -webkit-appearance: none; border: 2px solid;
-  display: block;
+.rep-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
 }
-.home-right button:active { opacity: 0.8; transform: scale(0.98); }
-#btn-repertorio { background: rgba(22,163,74,0.1); border-color: rgba(22,163,74,0.4); color: #16a34a; }
-#btn-random     { background: rgba(37,99,235,0.1); border-color: rgba(37,99,235,0.4); color: #2563eb; }
-#btn-start      { background: rgba(124,58,237,0.1); border-color: rgba(124,58,237,0.4); color: #7c3aed; }
+.rep-title { font-size: 1.1rem; font-weight: 800; color: #111; }
+#rep-filter {
+  padding: 0.5rem 0.9rem; border-radius: 50px;
+  border: 1.5px solid #e0e0e0; font-size: 0.9rem;
+  outline: none; width: 160px;
+}
+#rep-filter:focus { border-color: #7c3aed; }
+#rep-list {
+  overflow-y: auto;
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  align-content: start;
+  gap: 0;
+}
+.rep-item {
+  padding: 0.75rem 1.1rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f5f5f5;
+  border-right: 1px solid #f5f5f5;
+}
+.rep-item:hover { background: #f9f8ff; }
+.rep-item:active { background: #ede9fe; }
+.rep-item-title { font-weight: 700; font-size: 0.9rem; color: #111; }
+.rep-item-artist { font-size: 0.75rem; color: #999; margin-top: 1px; }
+
+/* Móvil: una columna */
+@media (max-width: 700px) {
+  .home-grid { flex-direction: column; }
+  .home-left { width: 100%; }
+  .home-right { max-height: 50vh; }
+}
 
 /* ESCUCHANDO */
 .pulse-wrap { position: relative; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -184,11 +235,15 @@ body { background: #f8f7f5; }
       <input id="manual-input" type="text" placeholder="título, artista o fragmento de letra" autocomplete="off" autocorrect="off" spellcheck="false" />
       <div id="results-list"></div>
       <button id="btn-manual">🔍 Buscar</button>
-    </div>
-    <div class="home-right">
-      <button id="btn-repertorio">🎵 Repertorio</button>
       <button id="btn-random">🎲 Canción random</button>
       <button id="btn-start">🎤 Escuchar canción</button>
+    </div>
+    <div class="home-right">
+      <div class="rep-header">
+        <span class="rep-title">🎵 Repertorio</span>
+        <input id="rep-filter" type="text" placeholder="Filtrar..." autocomplete="off" />
+      </div>
+      <div id="rep-list"></div>
     </div>
   </div>
   <p id="idle-msg" class="msg"></p>
@@ -337,12 +392,24 @@ document.getElementById('btn-random').addEventListener('click', function(){
   showFoundAndLoad(r.title, r.artist, null);
 });
 
-document.getElementById('btn-repertorio').addEventListener('click', function(){
-  setMsg('idle-msg','Elige una canción:','info');
-  showList(REPERTORIO.map(function(s){
-    return { trackName: s.title, artistName: s.artist };
-  }));
-});
+// Render repertorio panel
+function renderRepList(filter) {
+  var list = document.getElementById('rep-list');
+  if(!list) return;
+  list.innerHTML = '';
+  var f = (filter||'').toLowerCase();
+  REPERTORIO.forEach(function(s){
+    if(f && s.title.toLowerCase().indexOf(f)===-1 && s.artist.toLowerCase().indexOf(f)===-1) return;
+    var div = document.createElement('div'); div.className = 'rep-item';
+    var t = document.createElement('div'); t.className = 'rep-item-title'; t.textContent = s.title;
+    var a = document.createElement('div'); a.className = 'rep-item-artist'; a.textContent = s.artist;
+    div.appendChild(t); div.appendChild(a);
+    div.addEventListener('click', function(){ showFoundAndLoad(s.title, s.artist, null); });
+    list.appendChild(div);
+  });
+}
+document.getElementById('rep-filter').addEventListener('input', function(){ renderRepList(this.value); });
+renderRepList('');
 
 
 var GENIUS='jfkNtTRwuJWuF48x0xlZ8OVX5BwSjOdgGpywUOGbL0EsQsiPu_M4rhYm-71w98g5';
@@ -622,5 +689,6 @@ function stopTimer(){if(kTimer){clearInterval(kTimer);kTimer=null;}}
 function restartK(){userScrolling=false;manualOffset=0;currentY=0;targetY=0;applyY(0);speedIdx=3;updateBadge();kStart=performance.now();pausedAt=0;setPaused(false);updateAt(0);}
 function seekK(ms){var raw=ms/spd();kStart=performance.now()-raw;pausedAt=raw;updateAt(raw);}
 </script>
+
 </body>
 </html>
