@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0033)file:///D:/Descargas/index_4.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Karaoke Vic v8</title>
@@ -48,20 +48,25 @@ body { background: #f8f7f5; }
 
 
 /* ── HOME GRID ── */
-.screen#screen-idle {
-  justify-content: flex-start;
-  padding: 1.5rem;
-  gap: 1rem;
+#screen-idle {
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  padding: 1.5rem !important;
+  gap: 1rem !important;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
 }
 .home-grid {
-  display: flex;
-  flex-direction: row;
+  display: flex !important;
+  flex-direction: row !important;
   gap: 2rem;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1200px;
   flex: 1;
   align-items: flex-start;
   min-height: 0;
+  overflow: hidden;
 }
 .home-left {
   width: 280px;
@@ -108,11 +113,11 @@ body { background: #f8f7f5; }
   border-radius: 20px;
   border: 1.5px solid #e8e8e8;
   overflow: hidden;
-  max-height: calc(100vh - 220px);
+  height: calc(100vh - 180px);
 }
 .rep-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 1rem 1.2rem;
+  padding: 0.9rem 1.2rem;
   border-bottom: 1px solid #eee;
   flex-shrink: 0;
 }
@@ -127,24 +132,30 @@ body { background: #f8f7f5; }
   overflow-y: auto;
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   align-content: start;
-  gap: 0;
 }
 .rep-item {
-  padding: 0.75rem 1.1rem;
+  padding: 0.65rem 0.9rem;
   cursor: pointer;
   border-bottom: 1px solid #f5f5f5;
   border-right: 1px solid #f5f5f5;
 }
 .rep-item:hover { background: #f9f8ff; }
 .rep-item:active { background: #ede9fe; }
-.rep-item-title { font-weight: 700; font-size: 0.9rem; color: #111; }
-.rep-item-artist { font-size: 0.75rem; color: #999; margin-top: 1px; }
+.rep-item-title { font-weight: 700; font-size: 0.82rem; color: #111; line-height: 1.3; }
+.rep-item-artist { font-size: 0.72rem; color: #999; margin-top: 1px; }
 
-/* Móvil: una columna */
+/* Móvil */
 @media (max-width: 700px) {
+  .screen#screen-idle { padding: 1rem; gap: 0.8rem; }
   .home-grid { flex-direction: column; }
+  .home-left { width: 100%; }
+  .home-right { height: 55vh; border-radius: 16px; }
+  #rep-list { grid-template-columns: repeat(2, 1fr); }
+  .rep-item-title { font-size: 0.85rem; }
+  .rep-item-artist { font-size: 0.75rem; }
+}
   .home-left { width: 100%; }
   .home-right { max-height: 50vh; }
 }
@@ -232,7 +243,7 @@ body { background: #f8f7f5; }
   <div class="home-grid">
     <div class="home-left">
       <div class="home-label">¿Qué canción quieres cantar?</div>
-      <input id="manual-input" type="text" placeholder="título, artista o fragmento de letra" autocomplete="off" autocorrect="off" spellcheck="false" />
+      <input id="manual-input" type="text" placeholder="título, artista o fragmento de letra" autocomplete="off" autocorrect="off" spellcheck="false">
       <div id="results-list"></div>
       <button id="btn-manual">🔍 Buscar</button>
       <button id="btn-random">🎲 Canción random</button>
@@ -241,9 +252,9 @@ body { background: #f8f7f5; }
     <div class="home-right">
       <div class="rep-header">
         <span class="rep-title">🎵 Repertorio</span>
-        <input id="rep-filter" type="text" placeholder="Filtrar..." autocomplete="off" />
+        <input id="rep-filter" type="text" placeholder="Filtrar..." autocomplete="off">
       </div>
-      <div id="rep-list"></div>
+      <div id="rep-list"><div class="rep-item"><div class="rep-item-title">A Cualquier Otra Parte</div><div class="rep-item-artist">Dorian</div></div><div class="rep-item"><div class="rep-item-title">Agua</div><div class="rep-item-artist">Jarabe De Palo</div></div><div class="rep-item"><div class="rep-item-title">Amores De Barra</div><div class="rep-item-artist">Ella Baila Sola</div></div><div class="rep-item"><div class="rep-item-title">Ana</div><div class="rep-item-artist">Ismael Serrano</div></div><div class="rep-item"><div class="rep-item-title">Antología</div><div class="rep-item-artist">Shakira</div></div><div class="rep-item"><div class="rep-item-title">Asturias</div><div class="rep-item-artist">Víctor Manuel</div></div><div class="rep-item"><div class="rep-item-title">Boig Per Tu</div><div class="rep-item-artist">Sau</div></div><div class="rep-item"><div class="rep-item-title">Bosanova</div><div class="rep-item-artist">Estopa</div></div><div class="rep-item"><div class="rep-item-title">Burbujas De Amor</div><div class="rep-item-artist">Juan Luis Guerra</div></div><div class="rep-item"><div class="rep-item-title">Cacho A Cacho</div><div class="rep-item-artist">Estopa</div></div><div class="rep-item"><div class="rep-item-title">Cara Y Cruz</div><div class="rep-item-artist">Pedro Guerra</div></div><div class="rep-item"><div class="rep-item-title">Caraluna</div><div class="rep-item-artist">Los Bacilos</div></div><div class="rep-item"><div class="rep-item-title">Carbón Y Ramas</div><div class="rep-item-artist">Manolo García</div></div><div class="rep-item"><div class="rep-item-title">Chan Chan</div><div class="rep-item-artist">Compay Segundo</div></div><div class="rep-item"><div class="rep-item-title">Chiapas</div><div class="rep-item-artist">Tontxu</div></div><div class="rep-item"><div class="rep-item-title">Como Camarón</div><div class="rep-item-artist">Estopa</div></div><div class="rep-item"><div class="rep-item-title">Como Hablar</div><div class="rep-item-artist">Amaral</div></div><div class="rep-item"><div class="rep-item-title">Como Si Fueras A Morir Mañana</div><div class="rep-item-artist">Leiva</div></div><div class="rep-item"><div class="rep-item-title">Con La Frente Marchita</div><div class="rep-item-artist">Joaquín Sabina</div></div><div class="rep-item"><div class="rep-item-title">Con La Luna Llena</div><div class="rep-item-artist">Melendi</div></div><div class="rep-item"><div class="rep-item-title">Contamíname</div><div class="rep-item-artist">Pedro Guerra</div></div><div class="rep-item"><div class="rep-item-title">Contigo Aprendí</div><div class="rep-item-artist"></div></div><div class="rep-item"><div class="rep-item-title">Contigo En La Distancia</div><div class="rep-item-artist"></div></div><div class="rep-item"><div class="rep-item-title">Copa Rota</div><div class="rep-item-artist">Andrés Calamaro</div></div><div class="rep-item"><div class="rep-item-title">Corazón Partío</div><div class="rep-item-artist">Alejandro Sanz</div></div><div class="rep-item"><div class="rep-item-title">Cuando Brille El Sol</div><div class="rep-item-artist">La Guardia</div></div><div class="rep-item"><div class="rep-item-title">Cuando Quiero Sol</div><div class="rep-item-artist">Presuntos Implicados</div></div><div class="rep-item"><div class="rep-item-title">Cuentame Un Cuento</div><div class="rep-item-artist">Celtas Cortos</div></div><div class="rep-item"><div class="rep-item-title">Cuéntame Al Oído</div><div class="rep-item-artist">La Oreja De Van Gogh</div></div><div class="rep-item"><div class="rep-item-title">Deray</div><div class="rep-item-artist">Rosana</div></div><div class="rep-item"><div class="rep-item-title">Deseo</div><div class="rep-item-artist">Pedro Guerra</div></div><div class="rep-item"><div class="rep-item-title">Devuélveme La Vida</div><div class="rep-item-artist">Antonio Orozco</div></div><div class="rep-item"><div class="rep-item-title">Dibujos Animados</div><div class="rep-item-artist">Pedro Guerra</div></div><div class="rep-item"><div class="rep-item-title">Dos Gardenias</div><div class="rep-item-artist">Antonio Machín</div></div><div class="rep-item"><div class="rep-item-title">Dragón Rojo</div><div class="rep-item-artist">Rozalén</div></div><div class="rep-item"><div class="rep-item-title">Dueño De Mi Silencio</div><div class="rep-item-artist">Jarabe De Palo</div></div><div class="rep-item"><div class="rep-item-title">Dulce Condena</div><div class="rep-item-artist">Los Rodríguez</div></div><div class="rep-item"><div class="rep-item-title">Echo De Menos</div><div class="rep-item-artist">Kiko Veneno</div></div><div class="rep-item"><div class="rep-item-title">Eclipse De Mar</div><div class="rep-item-artist">Joaquín Sabina</div></div><div class="rep-item"><div class="rep-item-title">El Bien</div><div class="rep-item-artist">Viva Suecia</div></div><div class="rep-item"><div class="rep-item-title">El Blade</div><div class="rep-item-artist">Estopa</div></div><div class="rep-item"><div class="rep-item-title">El Lado Oscuro</div><div class="rep-item-artist">Jarabe De Palo</div></div><div class="rep-item"><div class="rep-item-title">El Marido De La Peluquera</div><div class="rep-item-artist">Pedro Guerra</div></div><div class="rep-item"><div class="rep-item-title">El Roce De Tu Piel</div><div class="rep-item-artist">Revólver</div></div><div class="rep-item"><div class="rep-item-title">El Sitio De Mi Recreo</div><div class="rep-item-artist">Antonio Vega</div></div><div class="rep-item"><div class="rep-item-title">El Sol No Regresa</div><div class="rep-item-artist">La Quinta Estación</div></div><div class="rep-item"><div class="rep-item-title">El Universo Sobre Mi</div><div class="rep-item-artist">Amaral</div></div><div class="rep-item"><div class="rep-item-title">Ella</div><div class="rep-item-artist">Bebe</div></div><div class="rep-item"><div class="rep-item-title">Emborracharme</div><div class="rep-item-artist">Lori Meyers</div></div><div class="rep-item"><div class="rep-item-title">Entre Mis Recuerdos</div><div class="rep-item-artist">Luz Casal</div></div><div class="rep-item"><div class="rep-item-title">Eso Que Tú Me Das</div><div class="rep-item-artist">Pau Donés</div></div><div class="rep-item"><div class="rep-item-title">Felicidad</div><div class="rep-item-artist">Albano</div></div><div class="rep-item"><div class="rep-item-title">Flaca</div><div class="rep-item-artist">Andrés Calamaro</div></div><div class="rep-item"><div class="rep-item-title">Frío Sin Ti</div><div class="rep-item-artist">Navajita Plateá</div></div><div class="rep-item"><div class="rep-item-title">Guantanamera</div><div class="rep-item-artist"></div></div><div class="rep-item"><div class="rep-item-title">Hay Amores</div><div class="rep-item-artist">Shakira</div></div><div class="rep-item"><div class="rep-item-title">Hemicraneal</div><div class="rep-item-artist">Estopa</div></div><div class="rep-item"><div class="rep-item-title">Hoy</div><div class="rep-item-artist">Gloria Estefan</div></div><div class="rep-item"><div class="rep-item-title">La Chica De Ayer</div><div class="rep-item-artist">Nacha Pop</div></div><div class="rep-item"><div class="rep-item-title">La Noche</div><div class="rep-item-artist">Presuntos Implicados</div></div><div class="rep-item"><div class="rep-item-title">La Revolución Sexual</div><div class="rep-item-artist">La Casa Azul</div></div><div class="rep-item"><div class="rep-item-title">La Senda Del Tiempo</div><div class="rep-item-artist">Celtas Cortos</div></div><div class="rep-item"><div class="rep-item-title">La Vida Es Bella</div><div class="rep-item-artist">Noa</div></div><div class="rep-item"><div class="rep-item-title">Lágrimas Negras</div><div class="rep-item-artist"></div></div><div class="rep-item"><div class="rep-item-title">Lazos</div><div class="rep-item-artist">Pedro Guerra</div></div><div class="rep-item"><div class="rep-item-title">Libre</div><div class="rep-item-artist">Nino Bravo</div></div><div class="rep-item"><div class="rep-item-title">Lía</div><div class="rep-item-artist">Ana Belén</div></div><div class="rep-item"><div class="rep-item-title">Llamando A La Tierra</div><div class="rep-item-artist">Mc Clan</div></div><div class="rep-item"><div class="rep-item-title">Llorona</div><div class="rep-item-artist"></div></div><div class="rep-item"><div class="rep-item-title">Lo Que Más</div><div class="rep-item-artist">Shakira</div></div><div class="rep-item"><div class="rep-item-title">Los Tontos</div><div class="rep-item-artist">C. Tangana</div></div><div class="rep-item"><div class="rep-item-title">Lucía</div><div class="rep-item-artist">Joan Manuel Serrat</div></div><div class="rep-item"><div class="rep-item-title">Luna</div><div class="rep-item-artist">Miguel Ríos</div></div><div class="rep-item"><div class="rep-item-title">Madrid-Barcelona</div><div class="rep-item-artist">Tontxu</div></div><div class="rep-item"><div class="rep-item-title">Me Falta El Aliento</div><div class="rep-item-artist">Estopa</div></div><div class="rep-item"><div class="rep-item-title">Me Maten</div><div class="rep-item-artist">C. Tangana</div></div><div class="rep-item"><div class="rep-item-title">Mediterráneo</div><div class="rep-item-artist">Joan Manuel Serrat</div></div><div class="rep-item"><div class="rep-item-title">Mil Calles Llevan Hacia Ti</div><div class="rep-item-artist">La Guardia</div></div><div class="rep-item"><div class="rep-item-title">Mil Campanas</div><div class="rep-item-artist"></div></div><div class="rep-item"><div class="rep-item-title">Mujer Que No Tendré</div><div class="rep-item-artist">Pedro Guerra</div></div><div class="rep-item"><div class="rep-item-title">Nana De Lluvia</div><div class="rep-item-artist">Carlos Núñez</div></div><div class="rep-item"><div class="rep-item-title">No Me Importa Nada</div><div class="rep-item-artist">Luz Casal</div></div><div class="rep-item"><div class="rep-item-title">Paisanajes</div><div class="rep-item-artist">Joaquín Sabina</div></div><div class="rep-item"><div class="rep-item-title">Papa Cuéntame</div><div class="rep-item-artist">Ismael Serrano</div></div><div class="rep-item"><div class="rep-item-title">Papá Cuéntame Otra Vez</div><div class="rep-item-artist">Ismael Serrano</div></div><div class="rep-item"><div class="rep-item-title">Para Los Dos</div><div class="rep-item-artist">Rozalén</div></div><div class="rep-item"><div class="rep-item-title">Pedro Navaja</div><div class="rep-item-artist">Rubén Blades</div></div><div class="rep-item"><div class="rep-item-title">Pero A Tu Lado</div><div class="rep-item-artist">Los Secretos</div></div><div class="rep-item"><div class="rep-item-title">Peter Pan</div><div class="rep-item-artist">Pedro Guerra</div></div><div class="rep-item"><div class="rep-item-title">Piensa En Mí</div><div class="rep-item-artist">Luz Casal</div></div><div class="rep-item"><div class="rep-item-title">Por La Boca Vive El Pez</div><div class="rep-item-artist">Fito Y Fitipaldis</div></div><div class="rep-item"><div class="rep-item-title">Procuro Olvidarte</div><div class="rep-item-artist"></div></div><div class="rep-item"><div class="rep-item-title">Pájaros De Portugal</div><div class="rep-item-artist">Joaquín Sabina</div></div><div class="rep-item"><div class="rep-item-title">Que Me Quedes Tú</div><div class="rep-item-artist">Shakira</div></div><div class="rep-item"><div class="rep-item-title">Qué Bonito</div><div class="rep-item-artist">Rosario Flores</div></div><div class="rep-item"><div class="rep-item-title">Qué Fue Aquello</div><div class="rep-item-artist">Tontxu</div></div><div class="rep-item"><div class="rep-item-title">Resumiendo</div><div class="rep-item-artist">Joaquín Sabina</div></div><div class="rep-item"><div class="rep-item-title">Revolvió</div><div class="rep-item-artist">Bebe</div></div><div class="rep-item"><div class="rep-item-title">Risk</div><div class="rep-item-artist">Tontxu</div></div><div class="rep-item"><div class="rep-item-title">Ritmo De Garaje</div><div class="rep-item-artist">Loquillo</div></div><div class="rep-item"><div class="rep-item-title">Rosa De La Paz</div><div class="rep-item-artist">Amaral</div></div><div class="rep-item"><div class="rep-item-title">Rosita</div><div class="rep-item-artist">Amaral</div></div><div class="rep-item"><div class="rep-item-title">Sexual</div><div class="rep-item-artist">La Casa Azul</div></div><div class="rep-item"><div class="rep-item-title">Siempre Me Quedará</div><div class="rep-item-artist">Bebe</div></div><div class="rep-item"><div class="rep-item-title">Sin Ti No Soy Nada</div><div class="rep-item-artist">Amaral</div></div><div class="rep-item"><div class="rep-item-title">Suma Y Sigue</div><div class="rep-item-artist">Estopa</div></div><div class="rep-item"><div class="rep-item-title">Sólo Pienso En Ti</div><div class="rep-item-artist">Víctor Manuel</div></div><div class="rep-item"><div class="rep-item-title">Tacones Rojos</div><div class="rep-item-artist">Sebastián Yatra</div></div><div class="rep-item"><div class="rep-item-title">Tan Solo</div><div class="rep-item-artist">Estopa</div></div><div class="rep-item"><div class="rep-item-title">Tantas Cosas</div><div class="rep-item-artist">Ismael Serrano</div></div><div class="rep-item"><div class="rep-item-title">Te He Echado De Menos</div><div class="rep-item-artist">Pablo Alborán</div></div><div class="rep-item"><div class="rep-item-title">Toda Una Vida</div><div class="rep-item-artist">Antonio Machín</div></div><div class="rep-item"><div class="rep-item-title">Todavía Una Canción De Amor</div><div class="rep-item-artist">Los Rodríguez</div></div><div class="rep-item"><div class="rep-item-title">Torn</div><div class="rep-item-artist">Natalie Imbruglia</div></div><div class="rep-item"><div class="rep-item-title">Tortura</div><div class="rep-item-artist">Shakira</div></div><div class="rep-item"><div class="rep-item-title">Tu Calorro</div><div class="rep-item-artist">Estopa</div></div><div class="rep-item"><div class="rep-item-title">Turnedo</div><div class="rep-item-artist">Iván Ferreiro</div></div><div class="rep-item"><div class="rep-item-title">Un Beso Y Una Flor</div><div class="rep-item-artist">Nino Bravo</div></div><div class="rep-item"><div class="rep-item-title">Un Muchacho De Mi Edad</div><div class="rep-item-artist">Pedro Guerra</div></div><div class="rep-item"><div class="rep-item-title">Vine Del Norte</div><div class="rep-item-artist">Ismael Serrano</div></div><div class="rep-item"><div class="rep-item-title">Vis A Vis</div><div class="rep-item-artist">Leiva</div></div><div class="rep-item"><div class="rep-item-title">Vivir Mi Vida</div><div class="rep-item-artist">Marc Anthony</div></div><div class="rep-item"><div class="rep-item-title">Volver</div><div class="rep-item-artist">Carlos Gardel</div></div><div class="rep-item"><div class="rep-item-title">Y Además</div><div class="rep-item-artist">Pasión Vega</div></div><div class="rep-item"><div class="rep-item-title">Yolanda</div><div class="rep-item-artist">Pablo Milanés</div></div><div class="rep-item"><div class="rep-item-title">You Know What I Mean</div><div class="rep-item-artist">Phil Collins</div></div></div>
     </div>
   </div>
   <p id="idle-msg" class="msg"></p>
@@ -254,7 +265,7 @@ body { background: #f8f7f5; }
     <div class="pr pr1"></div><div class="pr pr2"></div><div class="pr pr3"></div>
     <span class="mic-big">🎙️</span>
   </div>
-  <div id="waveform"></div>
+  <div id="waveform"><div class="bar" style="animation-delay: 0s;"></div><div class="bar" style="animation-delay: 0.05s;"></div><div class="bar" style="animation-delay: 0.1s;"></div><div class="bar" style="animation-delay: 0.15s;"></div><div class="bar" style="animation-delay: 0.2s;"></div><div class="bar" style="animation-delay: 0.25s;"></div><div class="bar" style="animation-delay: 0.3s;"></div><div class="bar" style="animation-delay: 0.35s;"></div><div class="bar" style="animation-delay: 0.4s;"></div><div class="bar" style="animation-delay: 0.45s;"></div><div class="bar" style="animation-delay: 0.5s;"></div><div class="bar" style="animation-delay: 0.55s;"></div><div class="bar" style="animation-delay: 0.6s;"></div><div class="bar" style="animation-delay: 0.65s;"></div><div class="bar" style="animation-delay: 0.7s;"></div><div class="bar" style="animation-delay: 0.75s;"></div><div class="bar" style="animation-delay: 0.8s;"></div><div class="bar" style="animation-delay: 0.85s;"></div><div class="bar" style="animation-delay: 0.9s;"></div><div class="bar" style="animation-delay: 0.95s;"></div><div class="bar" style="animation-delay: 1s;"></div><div class="bar" style="animation-delay: 1.05s;"></div></div>
   <div class="timer-arc" id="listen-countdown">8</div>
   <div class="listen-lbl">Escuchando…<br><b>Acerca el móvil a la música</b></div>
   <button id="btn-cancel">Cancelar</button>
@@ -304,69 +315,113 @@ body { background: #f8f7f5; }
 'use strict';
 
 var REPERTORIO = [
+  { title: "A Cualquier Otra Parte", artist: "Dorian" },
+  { title: "Agua", artist: "Jarabe De Palo" },
   { title: "Amores De Barra", artist: "Ella Baila Sola" },
   { title: "Ana", artist: "Ismael Serrano" },
   { title: "Antología", artist: "Shakira" },
   { title: "Asturias", artist: "Víctor Manuel" },
+  { title: "Boig Per Tu", artist: "Sau" },
   { title: "Bosanova", artist: "Estopa" },
   { title: "Burbujas De Amor", artist: "Juan Luis Guerra" },
   { title: "Cacho A Cacho", artist: "Estopa" },
+  { title: "Cara Y Cruz", artist: "Pedro Guerra" },
+  { title: "Caraluna", artist: "Los Bacilos" },
   { title: "Carbón Y Ramas", artist: "Manolo García" },
+  { title: "Chan Chan", artist: "Compay Segundo" },
   { title: "Chiapas", artist: "Tontxu" },
   { title: "Como Camarón", artist: "Estopa" },
   { title: "Como Hablar", artist: "Amaral" },
   { title: "Como Si Fueras A Morir Mañana", artist: "Leiva" },
+  { title: "Con La Frente Marchita", artist: "Joaquín Sabina" },
+  { title: "Con La Luna Llena", artist: "Melendi" },
   { title: "Contamíname", artist: "Pedro Guerra" },
   { title: "Contigo Aprendí", artist: "" },
   { title: "Contigo En La Distancia", artist: "" },
+  { title: "Copa Rota", artist: "Andrés Calamaro" },
+  { title: "Corazón Partío", artist: "Alejandro Sanz" },
+  { title: "Cuando Brille El Sol", artist: "La Guardia" },
+  { title: "Cuando Quiero Sol", artist: "Presuntos Implicados" },
   { title: "Cuentame Un Cuento", artist: "Celtas Cortos" },
+  { title: "Cuéntame Al Oído", artist: "La Oreja De Van Gogh" },
+  { title: "Deray", artist: "Rosana" },
+  { title: "Deseo", artist: "Pedro Guerra" },
+  { title: "Devuélveme La Vida", artist: "Antonio Orozco" },
   { title: "Dibujos Animados", artist: "Pedro Guerra" },
   { title: "Dos Gardenias", artist: "Antonio Machín" },
   { title: "Dragón Rojo", artist: "Rozalén" },
   { title: "Dueño De Mi Silencio", artist: "Jarabe De Palo" },
+  { title: "Dulce Condena", artist: "Los Rodríguez" },
   { title: "Echo De Menos", artist: "Kiko Veneno" },
   { title: "Eclipse De Mar", artist: "Joaquín Sabina" },
+  { title: "El Bien", artist: "Viva Suecia" },
   { title: "El Blade", artist: "Estopa" },
+  { title: "El Lado Oscuro", artist: "Jarabe De Palo" },
   { title: "El Marido De La Peluquera", artist: "Pedro Guerra" },
   { title: "El Roce De Tu Piel", artist: "Revólver" },
   { title: "El Sitio De Mi Recreo", artist: "Antonio Vega" },
+  { title: "El Sol No Regresa", artist: "La Quinta Estación" },
   { title: "El Universo Sobre Mi", artist: "Amaral" },
+  { title: "Ella", artist: "Bebe" },
+  { title: "Emborracharme", artist: "Lori Meyers" },
   { title: "Entre Mis Recuerdos", artist: "Luz Casal" },
+  { title: "Eso Que Tú Me Das", artist: "Pau Donés" },
+  { title: "Felicidad", artist: "Albano" },
+  { title: "Flaca", artist: "Andrés Calamaro" },
+  { title: "Frío Sin Ti", artist: "Navajita Plateá" },
   { title: "Guantanamera", artist: "" },
   { title: "Hay Amores", artist: "Shakira" },
+  { title: "Hemicraneal", artist: "Estopa" },
   { title: "Hoy", artist: "Gloria Estefan" },
+  { title: "La Chica De Ayer", artist: "Nacha Pop" },
+  { title: "La Noche", artist: "Presuntos Implicados" },
+  { title: "La Revolución Sexual", artist: "La Casa Azul" },
+  { title: "La Senda Del Tiempo", artist: "Celtas Cortos" },
+  { title: "La Vida Es Bella", artist: "Noa" },
   { title: "Lágrimas Negras", artist: "" },
   { title: "Lazos", artist: "Pedro Guerra" },
   { title: "Libre", artist: "Nino Bravo" },
   { title: "Lía", artist: "Ana Belén" },
+  { title: "Llamando A La Tierra", artist: "Mc Clan" },
   { title: "Llorona", artist: "" },
   { title: "Lo Que Más", artist: "Shakira" },
   { title: "Los Tontos", artist: "C. Tangana" },
   { title: "Lucía", artist: "Joan Manuel Serrat" },
+  { title: "Luna", artist: "Miguel Ríos" },
   { title: "Madrid-Barcelona", artist: "Tontxu" },
   { title: "Me Falta El Aliento", artist: "Estopa" },
   { title: "Me Maten", artist: "C. Tangana" },
   { title: "Mediterráneo", artist: "Joan Manuel Serrat" },
+  { title: "Mil Calles Llevan Hacia Ti", artist: "La Guardia" },
   { title: "Mil Campanas", artist: "" },
   { title: "Mujer Que No Tendré", artist: "Pedro Guerra" },
   { title: "Nana De Lluvia", artist: "Carlos Núñez" },
   { title: "No Me Importa Nada", artist: "Luz Casal" },
-  { title: "Pájaros De Portugal", artist: "Joaquín Sabina" },
   { title: "Paisanajes", artist: "Joaquín Sabina" },
   { title: "Papa Cuéntame", artist: "Ismael Serrano" },
   { title: "Papá Cuéntame Otra Vez", artist: "Ismael Serrano" },
   { title: "Para Los Dos", artist: "Rozalén" },
   { title: "Pedro Navaja", artist: "Rubén Blades" },
+  { title: "Pero A Tu Lado", artist: "Los Secretos" },
+  { title: "Peter Pan", artist: "Pedro Guerra" },
   { title: "Piensa En Mí", artist: "Luz Casal" },
+  { title: "Por La Boca Vive El Pez", artist: "Fito Y Fitipaldis" },
   { title: "Procuro Olvidarte", artist: "" },
+  { title: "Pájaros De Portugal", artist: "Joaquín Sabina" },
+  { title: "Que Me Quedes Tú", artist: "Shakira" },
+  { title: "Qué Bonito", artist: "Rosario Flores" },
   { title: "Qué Fue Aquello", artist: "Tontxu" },
   { title: "Resumiendo", artist: "Joaquín Sabina" },
   { title: "Revolvió", artist: "Bebe" },
+  { title: "Risk", artist: "Tontxu" },
+  { title: "Ritmo De Garaje", artist: "Loquillo" },
+  { title: "Rosa De La Paz", artist: "Amaral" },
   { title: "Rosita", artist: "Amaral" },
   { title: "Sexual", artist: "La Casa Azul" },
   { title: "Siempre Me Quedará", artist: "Bebe" },
   { title: "Sin Ti No Soy Nada", artist: "Amaral" },
   { title: "Suma Y Sigue", artist: "Estopa" },
+  { title: "Sólo Pienso En Ti", artist: "Víctor Manuel" },
   { title: "Tacones Rojos", artist: "Sebastián Yatra" },
   { title: "Tan Solo", artist: "Estopa" },
   { title: "Tantas Cosas", artist: "Ismael Serrano" },
@@ -374,13 +429,17 @@ var REPERTORIO = [
   { title: "Toda Una Vida", artist: "Antonio Machín" },
   { title: "Todavía Una Canción De Amor", artist: "Los Rodríguez" },
   { title: "Torn", artist: "Natalie Imbruglia" },
+  { title: "Tortura", artist: "Shakira" },
   { title: "Tu Calorro", artist: "Estopa" },
   { title: "Turnedo", artist: "Iván Ferreiro" },
   { title: "Un Beso Y Una Flor", artist: "Nino Bravo" },
   { title: "Un Muchacho De Mi Edad", artist: "Pedro Guerra" },
   { title: "Vine Del Norte", artist: "Ismael Serrano" },
   { title: "Vis A Vis", artist: "Leiva" },
+  { title: "Vivir Mi Vida", artist: "Marc Anthony" },
   { title: "Volver", artist: "Carlos Gardel" },
+  { title: "Y Además", artist: "Pasión Vega" },
+  { title: "Yolanda", artist: "Pablo Milanés" },
   { title: "You Know What I Mean", artist: "Phil Collins" },
 ];
 
@@ -690,5 +749,6 @@ function restartK(){userScrolling=false;manualOffset=0;currentY=0;targetY=0;appl
 function seekK(ms){var raw=ms/spd();kStart=performance.now()-raw;pausedAt=raw;updateAt(raw);}
 </script>
 
-</body>
-</html>
+
+
+</body></html>
