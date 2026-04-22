@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0033)file:///D:/Descargas/index_4.html -->
+<!-- saved from url=(0034)file:///D:/Descargas/index_17.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -12,10 +12,10 @@ body { background: #f8f7f5; }
 .screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh; min-height: 100dvh; padding: 2rem 1.5rem; gap: 1.3rem; }
 .screen.active { display: flex; }
 #screen-idle, #screen-listening, #screen-found {
-  background: radial-gradient(ellipse at 20% 80%, rgba(124,58,237,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(124,58,237,0.04) 0%, transparent 60%), #f8f7f5;
+  background: radial-gradient(ellipse at 20% 80%, rgba(29,185,84,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(29,185,84,0.04) 0%, transparent 60%), #f8f7f5;
 }
-.logo { font-size: clamp(4rem, 16vw, 9rem); font-weight: 800; letter-spacing: -4px; color: #111; line-height: 1; }
-.logo span { color: #7c3aed; }
+.site-logo { height: clamp(60px, 12vw, 110px); width: auto; object-fit: contain; }
+.k-logo-img { height: 36px; width: auto; object-fit: contain; }
 .tagline { font-size: clamp(0.75rem, 2.2vw, 1rem); letter-spacing: 3px; text-transform: uppercase; color: #888; text-align: center; font-weight: 600; }
 
 /* Buscador PRIMERO y más grande */
@@ -34,11 +34,11 @@ body { background: #f8f7f5; }
 
 .msg { font-size: 0.88rem; color: #e53e3e; text-align: center; min-height: 1.1em; line-height: 1.5; max-width: 400px; }
 .msg.ok { color: #38a169; }
-.msg.info { color: #7c3aed; }
+.msg.info { color: #1DB954; }
 #results-list { width: 100%; max-height: 220px; overflow-y: auto; background: #fff; border: 1.5px solid #e5e5e5; border-radius: 16px; display: none; }
 .result-item { padding: 0.8rem 1rem; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
 .result-item:last-child { border-bottom: none; }
-.result-item:active { background: #f9f8ff; }
+.result-item:active { background: #f0faf4; }
 .result-title { font-weight: 700; font-size: 0.95rem; color: #111; }
 .result-artist { font-size: 0.8rem; color: #888; margin-top: 2px; }
 
@@ -82,13 +82,13 @@ body { background: #f8f7f5; }
   font-size: 1rem; outline: none; -webkit-appearance: none;
 }
 .home-left input::placeholder { color: #bbb; }
-.home-left input:focus { border-color: #7c3aed; }
+.home-left input:focus { border-color: #1DB954; }
 #btn-manual {
   width: 100%; padding: 1rem; border-radius: 14px;
-  background: #111; border: none; color: #fff;
+  background: #191414; border: none; color: #fff;
   font-size: 1rem; font-weight: 700; cursor: pointer; -webkit-appearance: none;
 }
-#btn-manual:active { background: #333; }
+#btn-manual:active { background: #17a344; }
 #btn-random {
   width: 100%; padding: 1rem; border-radius: 50px;
   background: rgba(37,99,235,0.1); border: 2px solid rgba(37,99,235,0.4);
@@ -97,8 +97,8 @@ body { background: #f8f7f5; }
 }
 #btn-start {
   width: 100%; padding: 1rem; border-radius: 50px;
-  background: rgba(124,58,237,0.1); border: 2px solid rgba(124,58,237,0.4);
-  color: #7c3aed; font-size: 1rem; font-weight: 700;
+  background: rgba(29,185,84,0.1); border: 2px solid rgba(29,185,84,0.4);
+  color: #1DB954; font-size: 1rem; font-weight: 700;
   cursor: pointer; -webkit-appearance: none;
 }
 #btn-random:active, #btn-start:active { opacity: 0.8; }
@@ -127,7 +127,7 @@ body { background: #f8f7f5; }
   border: 1.5px solid #e0e0e0; font-size: 0.9rem;
   outline: none; width: 160px;
 }
-#rep-filter:focus { border-color: #7c3aed; }
+#rep-filter:focus { border-color: #1DB954; }
 #rep-list {
   overflow-y: auto;
   flex: 1;
@@ -141,8 +141,8 @@ body { background: #f8f7f5; }
   border-bottom: 1px solid #f5f5f5;
   border-right: 1px solid #f5f5f5;
 }
-.rep-item:hover { background: #f9f8ff; }
-.rep-item:active { background: #ede9fe; }
+.rep-item:hover { background: #f0faf4; }
+.rep-item:active { background: #d4f5e3; }
 .rep-item-title { font-weight: 700; font-size: 0.82rem; color: #111; line-height: 1.3; }
 .rep-item-artist { font-size: 0.72rem; color: #999; margin-top: 1px; }
 
@@ -162,31 +162,31 @@ body { background: #f8f7f5; }
 
 /* ESCUCHANDO */
 .pulse-wrap { position: relative; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.pr { position: absolute; border-radius: 50%; border: 2px solid rgba(124,58,237,0.3); animation: pr 2s ease-in-out infinite; }
+.pr { position: absolute; border-radius: 50%; border: 2px solid rgba(29,185,84,0.3); animation: pr 2s ease-in-out infinite; }
 .pr1 { width: 150px; height: 150px; }
 .pr2 { width: 115px; height: 115px; border-color: rgba(124,58,237,0.5); animation-delay: .35s; }
 .pr3 { width: 82px; height: 82px; border-color: rgba(124,58,237,0.7); animation-delay: .7s; }
 @keyframes pr { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.09);opacity:0.5} }
 .mic-big { font-size: 3rem; z-index: 1; }
 #waveform { display: flex; align-items: center; gap: 5px; height: 52px; }
-.bar { width: 6px; background: #7c3aed; border-radius: 3px; height: 8px; animation: wv 1s ease-in-out infinite; }
+.bar { width: 6px; background: #1DB954; border-radius: 3px; height: 8px; animation: wv 1s ease-in-out infinite; }
 @keyframes wv { 0%,100%{height:8px} 50%{height:46px} }
 .listen-lbl { font-size: 1.1rem; color: #555; text-align: center; line-height: 1.9; }
-.listen-lbl b { color: #7c3aed; font-weight: 600; }
-.timer-arc { font-size: 2.5rem; font-weight: 800; color: #7c3aed; }
+.listen-lbl b { color: #1DB954; font-weight: 600; }
+.timer-arc { font-size: 2.5rem; font-weight: 800; color: #1DB954; }
 #btn-cancel { padding: 0.7rem 2.2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ddd; color: #999; cursor: pointer; font-size: 0.95rem; -webkit-appearance: none; }
 
 /* ENCONTRADA */
-.badge-ok { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: #7c3aed; padding: 0.3rem 1.1rem; border-radius: 50px; border: 1px solid rgba(124,58,237,0.3); background: rgba(124,58,237,0.07); }
+.badge-ok { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: #1DB954; padding: 0.3rem 1.1rem; border-radius: 50px; border: 1px solid rgba(29,185,84,0.3); background: rgba(29,185,84,0.07); }
 #found-title { font-size: clamp(1.7rem, 6vw, 2.6rem); font-weight: 800; text-align: center; max-width: 480px; line-height: 1.2; color: #111; }
 #found-artist { font-size: 1.1rem; color: #666; }
 .loading-lyrics { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; }
-.spinner { width: 36px; height: 36px; border: 3px solid #eee; border-top-color: #7c3aed; border-radius: 50%; animation: spin 0.8s linear infinite; }
+.spinner { width: 36px; height: 36px; border: 3px solid #eee; border-top-color: #1DB954; border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.loading-txt { font-size: 0.9rem; color: #7c3aed; }
+.loading-txt { font-size: 0.9rem; color: #1DB954; }
 .found-btns { display: flex; gap: 12px; margin-top: 0.4rem; flex-wrap: wrap; justify-content: center; }
-.btn-p { padding: 0.95rem 2.4rem; border-radius: 50px; background: #7c3aed; border: none; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; -webkit-appearance: none; }
-.btn-p:active { background: #6d28d9; }
+.btn-p { padding: 0.95rem 2.4rem; border-radius: 50px; background: #1DB954; border: none; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; -webkit-appearance: none; }
+.btn-p:active { background: #17a344; }
 .btn-s { padding: 0.95rem 2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ddd; color: #666; font-size: 1rem; cursor: pointer; -webkit-appearance: none; }
 .btn-s:active { background: #f5f5f5; }
 
@@ -195,7 +195,7 @@ body { background: #f8f7f5; }
 #screen-karaoke.active { display: flex; }
 #k-hdr { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 0.65rem 1rem; width: 100%; flex-shrink: 0; background: rgba(255,255,255,0.95); border-bottom: 1px solid #eee; z-index: 10; }
 .k-logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -1px; color: #111; white-space: nowrap; }
-.k-logo span { color: #7c3aed; }
+.k-logo span { color: #1DB954; }
 .k-song { display: flex; flex-direction: column; align-items: center; min-width: 0; }
 .k-song .kt { font-size: 1.05rem; font-weight: 800; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
 .k-song .ka { font-size: 0.82rem; color: #888; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-align: center; }
@@ -219,7 +219,7 @@ body { background: #f8f7f5; }
 }
 .k-btns button:active { opacity: 0.7; transform: scale(0.95); }
 #btn-play   { background: #16a34a; }
-#btn-pause  { background: #7c3aed; display: none; }
+#btn-pause  { background: #1DB954; display: none; }
 #btn-slower { background: #d97706; }
 #btn-faster { background: #2563eb; }
 #btn-rst    { background: #64748b; }
@@ -231,14 +231,14 @@ body { background: #f8f7f5; }
 .ll { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 600; text-align: center; color: #111; line-height: 1.4; padding: 0.1rem 0.5rem; cursor: pointer; user-select: none; width: 100%; }
 #k-ftr { padding: 0.65rem 1rem; width: 100%; flex-shrink: 0; background: rgba(255,255,255,0.95); border-top: 1px solid #eee; z-index: 10; }
 #prog-track { width: 100%; height: 5px; background: #e5e5e5; border-radius: 3px; cursor: pointer; touch-action: none; }
-#prog-fill { height: 100%; background: #7c3aed; border-radius: 3px; width: 0%; pointer-events: none; }
+#prog-fill { height: 100%; background: #1DB954; border-radius: 3px; width: 0%; pointer-events: none; }
 .time-row { display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.74rem; color: #aaa; }
 </style>
 </head>
 <body>
 
 <div id="screen-idle" class="screen active">
-  <div class="logo">Karaoke <span>Vic</span></div>
+  <img src="file:///D:/Descargas/logo.png" alt="Spovicfy" class="site-logo">
   <div class="tagline">que el fin del mundo nos pille cantando</div>
   <div class="home-grid">
     <div class="home-left">
@@ -289,7 +289,7 @@ body { background: #f8f7f5; }
 
 <div id="screen-karaoke">
   <div id="k-hdr">
-    <div class="k-logo">Karaoke <span>Vic</span></div>
+    <img src="file:///D:/Descargas/logo.png" alt="Spovicfy" class="k-logo-img">
     <div class="k-song">
       <div class="kt" id="k-title">—</div>
       <div class="ka" id="k-artist"></div>
