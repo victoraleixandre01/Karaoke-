@@ -78,6 +78,12 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
   background: rgba(25,20,20,0.07); border: 2px solid rgba(25,20,20,0.2);
   color: #191414; font-size: 1rem; font-weight: 700; cursor: pointer; -webkit-appearance: none;
 }
+#btn-english {
+  width: 100%; padding: 0.9rem; border-radius: 50px;
+  background: rgba(37,99,235,0.1); border: 2px solid rgba(37,99,235,0.35);
+  color: #2563eb; font-size: 1rem; font-weight: 700; cursor: pointer; -webkit-appearance: none;
+}
+#btn-english:active { opacity: 0.75; }
 #btn-random:active, #btn-start:active { opacity: 0.75; }
 
 /* REPERTOIRE PANEL */
@@ -226,6 +232,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
       <button id="btn-manual">🔍 Buscar</button>
       <button id="btn-random">🎲 Canción random</button>
       <button id="btn-start">🎤 Escuchar canción</button>
+      <button id="btn-english">🇬🇧 En inglés</button>
       <p id="idle-msg" class="msg"></p>
     </div>
     <div class="home-right">
@@ -420,6 +427,46 @@ var REPERTORIO = [
   { title: "You Know What I Mean", artist: "Phil Collins" },
 ];
 
+
+var ENGLISH = [
+  { title: "Stand By Me", artist: "Ben E. King" },
+  { title: "Every Breath You Take", artist: "The Police" },
+  { title: "Can't Take My Eyes Off You", artist: "Lauryn Hill" },
+  { title: "I Will Survive", artist: "Gloria Gaynor" },
+  { title: "Knockin' On Heaven's Door", artist: "Bob Dylan" },
+  { title: "Killing Me Softly", artist: "Fugees" },
+  { title: "Valerie", artist: "Amy Winehouse" },
+  { title: "Roxanne", artist: "The Police" },
+  { title: "Lady", artist: "Kenny Rogers" },
+  { title: "Sweet Dreams", artist: "Eurythmics" },
+  { title: "Don't Stop The Music", artist: "Rihanna" },
+  { title: "Rolling In The Deep", artist: "Adele" },
+  { title: "Take On Me", artist: "A-ha" },
+  { title: "What's Going On", artist: "Marvin Gaye" },
+  { title: "Highway To Hell", artist: "AC/DC" },
+  { title: "Have You Ever Seen The Rain", artist: "CCR" },
+  { title: "One Love", artist: "Bob Marley" },
+  { title: "I Still Haven't Found What I'm Looking For", artist: "U2" },
+  { title: "The Reason", artist: "Hoobastank" },
+  { title: "Creep", artist: "Radiohead" },
+  { title: "Lemon Tree", artist: "Fool's Garden" },
+  { title: "Personal Jesus", artist: "Depeche Mode" },
+  { title: "Sweet Caroline", artist: "Neil Diamond" },
+  { title: "Viva La Vida", artist: "Coldplay" },
+  { title: "Total Eclipse Of The Heart", artist: "Bonnie Tyler" },
+  { title: "Don't Look Back In Anger", artist: "Oasis" },
+  { title: "I Need You Baby", artist: "" },
+  { title: "Let Her Go", artist: "Passenger" },
+  { title: "Nothing Else Matters", artist: "Metallica" },
+  { title: "Liberian Girl", artist: "Michael Jackson" },
+  { title: "These Boots Are Made For Walkin'", artist: "Nancy Sinatra" },
+  { title: "Seven Nation Army", artist: "The White Stripes" },
+  { title: "No Woman No Cry", artist: "Bob Marley" },
+  { title: "Maniac", artist: "Michael Sembello" },
+  { title: "Torn", artist: "Natalie Imbruglia" },
+  { title: "You Know What I Mean", artist: "Phil Collins" },
+];
+
 var GENIUS='jfkNtTRwuJWuF48x0xlZ8OVX5BwSjOdgGpywUOGbL0EsQsiPu_M4rhYm-71w98g5';
 var song=null,lyrics=[],kTimer=null,kStart=0,paused=false,pausedAt=0;
 var mediaRec=null,chunks=[],cntTmr=null;
@@ -488,6 +535,26 @@ document.getElementById('btn-exit').addEventListener('click',function(){stopTime
 document.getElementById('prog-track').addEventListener('click',seekFromEvent);
 document.getElementById('prog-track').addEventListener('touchend',function(e){e.preventDefault();seekFromEvent(e.changedTouches[0]);});
 document.getElementById('btn-random').addEventListener('click',function(){var r=REPERTORIO[Math.floor(Math.random()*REPERTORIO.length)];showFoundAndLoad(r.title,r.artist,null);});
+document.getElementById('btn-english').addEventListener('click',function(){
+  // Show English songs in the rep panel
+  var list=document.getElementById('rep-list');
+  list.innerHTML='';
+  document.getElementById('rep-filter').value='';
+  ENGLISH.forEach(function(s){
+    var div=document.createElement('div');div.className='rep-item';
+    var t=document.createElement('div');t.className='rep-item-title';t.textContent=s.title;
+    var a=document.createElement('div');a.className='rep-item-artist';a.textContent=s.artist;
+    div.appendChild(t);div.appendChild(a);
+    div.addEventListener('click',function(){showFoundAndLoad(s.title,s.artist,null);});
+    list.appendChild(div);
+  });
+  document.querySelector('.rep-title').textContent='🇬🇧 En inglés';
+});
+// Also make Repertorio button restore full list
+document.getElementById('rep-filter').addEventListener('focus', function(){
+  document.querySelector('.rep-title').textContent='🎵 Repertorio';
+  renderRepList('');
+});
 
 function seekFromEvent(e){if(!lyrics.length)return;var r=document.getElementById('prog-track').getBoundingClientRect();seekK(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*totalMs());}
 function setPaused(p){paused=p;document.getElementById('btn-play').style.display=p?'flex':'none';document.getElementById('btn-pause').style.display=p?'none':'flex';}
