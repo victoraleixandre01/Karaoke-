@@ -68,6 +68,12 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
   font-size: 1rem; font-weight: 700; cursor: pointer; -webkit-appearance: none;
 }
 #btn-manual:active { background: #17a344; }
+#btn-exitos {
+  width: 100%; padding: 0.9rem; border-radius: 50px;
+  background: rgba(234,179,8,0.12); border: 2px solid rgba(234,179,8,0.5);
+  color: #b45309; font-size: 1rem; font-weight: 700; cursor: pointer; -webkit-appearance: none;
+}
+#btn-exitos:active { opacity: 0.75; }
 #btn-random {
   width: 100%; padding: 0.9rem; border-radius: 50px;
   background: rgba(29,185,84,0.1); border: 2px solid rgba(29,185,84,0.4);
@@ -244,6 +250,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
       <div id="results-list"></div>
       <button id="btn-manual">🔍 Buscar</button>
       <div class="btn-separator"></div>
+      <button id="btn-exitos">⭐ Éxitos fáciles</button>
       <button id="btn-random">🎲 Canción random</button>
       <button id="btn-start">🎤 Escuchar canción</button>
       <button id="btn-english">🇬🇧 En inglés</button>
@@ -439,6 +446,32 @@ var REPERTORIO = [
   { title: "Y Además", artist: "Pasión Vega" },
   { title: "Yolanda", artist: "Pablo Milanés" },
   { title: "You Know What I Mean", artist: "Phil Collins" },
+  { title: "19 Días Y 500 Noches", artist: "Joaquín Sabina" },
+  { title: "Ateo", artist: "C. Tangana" },
+  { title: "Bella Ciao", artist: "" },
+  { title: "Chiquilla", artist: "Seguridad Social" },
+  { title: "Despechá", artist: "Rosalía" },
+  { title: "El Cuarto De Tula", artist: "Buena Vista Social Club" },
+  { title: "Feo Fuerte Y Formal", artist: "Estopa" },
+  { title: "Flaca", artist: "Jarabe De Palo" },
+  { title: "Hago Lo Que Me Invade", artist: "Jorge Drexler" },
+  { title: "He Visto Una Luz", artist: "La Oreja De Van Gogh" },
+  { title: "Insurrección", artist: "El Último De La Fila" },
+  { title: "La Bamba", artist: "Ritchie Valens" },
+  { title: "La Casa Por El Tejado", artist: "Fito Y Fitipaldis" },
+  { title: "La Lista De La Compra", artist: "Los Estanques" },
+  { title: "Los Locos", artist: "C. Tangana" },
+  { title: "Maldito Duende", artist: "Héroes Del Silencio" },
+  { title: "Maneras De Vivir", artist: "Héroes Del Silencio" },
+  { title: "No Dudaría", artist: "El Último De La Fila" },
+  { title: "No Puedo Vivir Sin Ti", artist: "La Guardia" },
+  { title: "Pájaros De Barro", artist: "Manolo García" },
+  { title: "Quedaté", artist: "Camilo" },
+  { title: "Resistiré", artist: "Dúo Dinámico" },
+  { title: "Sarandonga", artist: "Celia Cruz" },
+  { title: "Volando Voy", artist: "Camarón De La Isla" },
+  { title: "Voy Caminando", artist: "Jarabe De Palo" },
+  { title: "Y Nos Dieron Las 10", artist: "Joaquín Sabina" },
 ];
 
 
@@ -481,6 +514,49 @@ var ENGLISH = [
   { title: "You Know What I Mean", artist: "Phil Collins" },
 ];
 
+var EXITOS = [
+  { title: "No Puedo Vivir Sin Ti", artist: "La Guardia" },
+  { title: "Eso Que Tú Me Das", artist: "Pau Donés" },
+  { title: "Flaca", artist: "Andrés Calamaro" },
+  { title: "Flaca", artist: "Jarabe De Palo" },
+  { title: "Echo De Menos", artist: "Kiko Veneno" },
+  { title: "Los Locos", artist: "C. Tangana" },
+  { title: "Corazón Partío", artist: "Alejandro Sanz" },
+  { title: "Volando Voy", artist: "Camarón De La Isla" },
+  { title: "Insurrección", artist: "El Último De La Fila" },
+  { title: "Pájaros De Barro", artist: "Manolo García" },
+  { title: "La Casa Por El Tejado", artist: "Fito Y Fitipaldis" },
+  { title: "No Dudaría", artist: "El Último De La Fila" },
+  { title: "Bella Ciao", artist: "" },
+  { title: "19 Días Y 500 Noches", artist: "Joaquín Sabina" },
+  { title: "Y Nos Dieron Las 10", artist: "Joaquín Sabina" },
+  { title: "Chan Chan", artist: "Compay Segundo" },
+  { title: "El Cuarto De Tula", artist: "Buena Vista Social Club" },
+  { title: "La Lista De La Compra", artist: "Los Estanques" },
+  { title: "La Bamba", artist: "Ritchie Valens" },
+  { title: "Guantanamera", artist: "" },
+  { title: "Hago Lo Que Me Invade", artist: "Jorge Drexler" },
+  { title: "Antología", artist: "Shakira" },
+  { title: "Tacones Rojos", artist: "Sebastián Yatra" },
+  { title: "Maldito Duende", artist: "Héroes Del Silencio" },
+  { title: "Libre", artist: "Nino Bravo" },
+  { title: "Un Beso Y Una Flor", artist: "Nino Bravo" },
+  { title: "Maneras De Vivir", artist: "Héroes Del Silencio" },
+  { title: "Feo Fuerte Y Formal", artist: "Estopa" },
+  { title: "Ritmo De Garaje", artist: "Loquillo" },
+  { title: "Chiquilla", artist: "Seguridad Social" },
+  { title: "Resistiré", artist: "Dúo Dinámico" },
+  { title: "Felicidad", artist: "Albano" },
+  { title: "Burbujas De Amor", artist: "Juan Luis Guerra" },
+  { title: "Ateo", artist: "C. Tangana" },
+  { title: "Me Maten", artist: "C. Tangana" },
+  { title: "Quedaté", artist: "Camilo" },
+  { title: "Despechá", artist: "Rosalía" },
+  { title: "He Visto Una Luz", artist: "La Oreja De Van Gogh" },
+  { title: "Voy Caminando", artist: "Jarabe De Palo" },
+  { title: "Sarandonga", artist: "Celia Cruz" },
+];
+
 var GENIUS='jfkNtTRwuJWuF48x0xlZ8OVX5BwSjOdgGpywUOGbL0EsQsiPu_M4rhYm-71w98g5';
 var song=null,lyrics=[],kTimer=null,kStart=0,paused=false,pausedAt=0;
 var mediaRec=null,chunks=[],cntTmr=null;
@@ -493,42 +569,7 @@ function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el
 function applyY(y){document.getElementById('lyrics-box').style.transform='translateY('+y+'px)';}
 function spd(){return SPEED[speedIdx];}
 function updateBadge(){var s=spd();document.getElementById('speed-badge').textContent=(s===1?'1':s)+'×';}
-function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'').trim();}
-
-// Fuzzy match: tolera mayúsculas, acentos y pequeños errores tipográficos
-// Devuelve una puntuación (menor = mejor). -1 si no hay ningún match.
-function fuzzyScore(text, query) {
-  var t = norm(text), q = norm(query);
-  if (!q) return 0;
-  // Coincidencia exacta
-  if (t.indexOf(q) !== -1) return 0;
-  // Todas las palabras del query aparecen en el texto
-  var qWords = q.split(/\s+/).filter(Boolean);
-  if (qWords.every(function(w){ return t.indexOf(w) !== -1; })) return 1;
-  // Coincidencia de prefijo de cada palabra
-  var tWords = t.split(/\s+/).filter(Boolean);
-  var prefixHits = qWords.filter(function(qw){
-    return tWords.some(function(tw){ return tw.indexOf(qw) === 0; });
-  }).length;
-  if (prefixHits === qWords.length) return 2;
-  // Distancia de Levenshtein palabra a palabra
-  function lev(a,b){
-    var m=a.length,n=b.length,dp=[];
-    for(var i=0;i<=m;i++){dp[i]=[i];for(var j=1;j<=n;j++)dp[i][j]=0;}
-    for(var j=0;j<=n;j++)dp[0][j]=j;
-    for(var i=1;i<=m;i++)for(var j=1;j<=n;j++)
-      dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
-    return dp[m][n];
-  }
-  // Cada palabra del query tiene al menos una palabra del texto a distancia <= umbral
-  var maxErr = function(w){ return w.length <= 3 ? 0 : w.length <= 5 ? 1 : 2; };
-  var fuzzyHits = qWords.filter(function(qw){
-    return tWords.some(function(tw){ return lev(qw,tw) <= maxErr(qw); });
-  }).length;
-  if (fuzzyHits === qWords.length) return 3 + (qWords.length - fuzzyHits);
-  if (fuzzyHits > 0) return 10 - fuzzyHits;
-  return -1; // sin match
-}
+function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
 function isSecondary(item){var t=item.trackName||'';return /live|directo|acoustic|acustic|remaster|remix|maqueta|demo/i.test(t)||/\bfeat\b|\bft\b/i.test(t);}
 function score(item,qa){
   var t=item.trackName||'',a=item.artistName||'',s=0;
@@ -544,27 +585,12 @@ function score(item,qa){
 }
 
 // Render repertoire
-function renderRepList(filter, pool){
+function renderRepList(filter){
   var list=document.getElementById('rep-list');if(!list)return;
   list.innerHTML='';
-  var source=pool||REPERTORIO;
-  var f=(filter||'').trim();
-  var items;
-  if(!f){
-    items=source.map(function(s){return{s:s,sc:0};});
-  } else {
-    items=[];
-    source.forEach(function(s){
-      var sc=Math.min(
-        fuzzyScore(s.title, f),
-        fuzzyScore(s.artist, f)
-      );
-      if(sc>=0) items.push({s:s,sc:sc});
-    });
-    items.sort(function(a,b){return a.sc-b.sc;});
-  }
-  items.forEach(function(it){
-    var s=it.s;
+  var f=(filter||'').toLowerCase();
+  REPERTORIO.forEach(function(s){
+    if(f&&s.title.toLowerCase().indexOf(f)===-1&&s.artist.toLowerCase().indexOf(f)===-1)return;
     var div=document.createElement('div');div.className='rep-item';
     var t=document.createElement('div');t.className='rep-item-title';t.textContent=s.title;
     var a=document.createElement('div');a.className='rep-item-artist';a.textContent=s.artist;
@@ -573,10 +599,7 @@ function renderRepList(filter, pool){
     list.appendChild(div);
   });
 }
-document.getElementById('rep-filter').addEventListener('input',function(){
-  var pool=this.dataset.pool==='english'?ENGLISH:REPERTORIO;
-  renderRepList(this.value, pool);
-});
+document.getElementById('rep-filter').addEventListener('input',function(){renderRepList(this.value);});
 renderRepList('');
 
 (function(){var wf=document.getElementById('waveform');for(var i=0;i<22;i++){var b=document.createElement('div');b.className='bar';b.style.animationDelay=(i*0.05)+'s';wf.appendChild(b);}})();
@@ -602,20 +625,29 @@ document.getElementById('btn-exit').addEventListener('click',function(){stopTime
 document.getElementById('prog-track').addEventListener('click',seekFromEvent);
 document.getElementById('prog-track').addEventListener('touchend',function(e){e.preventDefault();seekFromEvent(e.changedTouches[0]);});
 document.getElementById('btn-random').addEventListener('click',function(){var r=REPERTORIO[Math.floor(Math.random()*REPERTORIO.length)];showFoundAndLoad(r.title,r.artist,null);});
+document.getElementById('btn-exitos').addEventListener('click',function(){
+  document.querySelector('.rep-title').textContent='⭐ Éxitos fáciles';
+  renderRepList('', EXITOS);
+  document.getElementById('rep-filter').dataset.pool='exitos';
+});
 document.getElementById('btn-english').addEventListener('click',function(){
   // Show English songs in the rep panel
   var list=document.getElementById('rep-list');
   list.innerHTML='';
   document.getElementById('rep-filter').value='';
+  ENGLISH.forEach(function(s){
+    var div=document.createElement('div');div.className='rep-item';
+    var t=document.createElement('div');t.className='rep-item-title';t.textContent=s.title;
+    var a=document.createElement('div');a.className='rep-item-artist';a.textContent=s.artist;
+    div.appendChild(t);div.appendChild(a);
+    div.addEventListener('click',function(){showFoundAndLoad(s.title,s.artist,null);});
+    list.appendChild(div);
+  });
   document.querySelector('.rep-title').textContent='🇬🇧 En inglés';
-  renderRepList('', ENGLISH);
-  // Hijack filter to search within english while in english mode
-  document.getElementById('rep-filter').dataset.pool='english';
 });
 // Also make Repertorio button restore full list
 document.getElementById('rep-filter').addEventListener('focus', function(){
   document.querySelector('.rep-title').textContent='🎵 Repertorio';
-  delete this.dataset.pool;
   renderRepList('');
 });
 
