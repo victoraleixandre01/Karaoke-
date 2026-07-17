@@ -192,37 +192,62 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
 /* KARAOKE SCREEN */
 #screen-karaoke {
   display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  flex-direction: column; background: #fafffe;
+  flex-direction: column; background: #0a0a0a;
 }
 #screen-karaoke.active { display: flex; }
 #k-hdr {
   display: grid; grid-template-columns: auto 1fr auto;
-  align-items: center; gap: 10px;
-  padding: 0.6rem 1rem; width: 100%; flex-shrink: 0;
-  background: #000000; border-bottom: 1px solid #1a1a1a; z-index: 10;
+  align-items: center; gap: 12px;
+  padding: 0.7rem 1.2rem; width: 100%; flex-shrink: 0;
+  background: #000; border-bottom: 1px solid #222; z-index: 10;
 }
-.k-logo-img { height: 32px; width: auto; object-fit: contain; transition: opacity 0.15s; }
-.k-logo-img:hover { opacity: 0.75; }
+.k-logo-img { height: 44px; width: auto; object-fit: contain; transition: opacity 0.15s; }
+.k-logo-img:hover { opacity: 0.7; }
 .k-song { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; text-align: center; }
-.k-song .kt { font-size: 1rem; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center; }
-.k-song .ka { font-size: 0.8rem; color: #aaa; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center; }
-.k-btns { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
-.k-btns button { height: 40px; min-width: 40px; padding: 0 12px; border-radius: 20px; border: none; font-size: 1rem; font-weight: 700; color: #fff; cursor: pointer; -webkit-appearance: none; display: flex; align-items: center; justify-content: center; }
-.k-btns button:active { opacity: 0.7; transform: scale(0.95); }
+.k-song .kt { font-size: 1rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center; letter-spacing: 0.01em; }
+.k-song .ka { font-size: 0.78rem; color: #1DB954; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center; font-weight: 500; }
+.k-btns { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+.k-btns button {
+  height: 38px; min-width: 38px; padding: 0 12px; border-radius: 8px;
+  border: none; font-size: 0.85rem; font-weight: 700; color: #fff;
+  cursor: pointer; -webkit-appearance: none;
+  display: flex; align-items: center; justify-content: center;
+  background: #1a1a1a; letter-spacing: 0.02em;
+  transition: background 0.12s, transform 0.08s;
+}
+.k-btns button:hover { background: #2a2a2a; }
+.k-btns button:active { opacity: 0.8; transform: scale(0.94); }
 #btn-play   { background: #1DB954; display: flex; }
-#btn-pause  { background: #000000; display: none; }
-#btn-slower { background: #d97706; }
-#btn-faster { background: #2563eb; }
-#btn-rst    { background: #64748b; }
-#btn-exit   { background: #dc2626; }
-#speed-badge { height: 40px; min-width: 44px; padding: 0 10px; border-radius: 20px; background: #f0f0f0; font-size: 0.8rem; font-weight: 800; color: #555; display: flex; align-items: center; justify-content: center; }
-#lyrics-win { flex: 1; width: 100%; overflow: hidden; position: relative; touch-action: pan-y; background: #fafffe; }
-#lyrics-box { position: absolute; left: 0; right: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 0 1.5rem; will-change: transform; }
-.ll { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 600; text-align: center; color: #111; line-height: 1.4; padding: 0.1rem 0.5rem; cursor: pointer; user-select: none; width: 100%; }
-#k-ftr { padding: 0.6rem 1rem; width: 100%; flex-shrink: 0; background: rgba(255,255,255,0.95); border-top: 1px solid #e0f5e8; z-index: 10; }
-#prog-track { width: 100%; height: 5px; background: #e0f5e8; border-radius: 3px; cursor: pointer; touch-action: none; }
-#prog-fill { height: 100%; background: #1DB954; border-radius: 3px; width: 0%; pointer-events: none; }
-.time-row { display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.74rem; color: #aaa; }
+#btn-play:hover { background: #1ed760; }
+#btn-pause  { background: #1DB954; display: none; }
+#btn-pause:hover { background: #1ed760; }
+#btn-slower, #btn-faster { background: #1a1a1a; color: #aaa; font-size: 1.1rem; }
+#btn-rst    { background: #1a1a1a; color: #888; }
+#btn-exit   { background: #1a1a1a; color: #aaa; padding: 0 14px; font-size: 0.78rem; }
+#btn-exit:hover { color: #fff; }
+#speed-badge {
+  height: 38px; min-width: 42px; padding: 0 10px; border-radius: 8px;
+  background: #1a1a1a; font-size: 0.78rem; font-weight: 800;
+  color: #1DB954; display: flex; align-items: center; justify-content: center;
+  letter-spacing: 0.03em;
+}
+#lyrics-win { flex: 1; width: 100%; overflow: hidden; position: relative; touch-action: pan-y; background: #0a0a0a; }
+#lyrics-box { position: absolute; left: 0; right: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 1.2rem; padding: 0 1.5rem; will-change: transform; }
+.ll {
+  font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 600;
+  text-align: center; color: rgba(255,255,255,0.25);
+  line-height: 1.4; padding: 0.1rem 0.5rem;
+  cursor: pointer; user-select: none; width: 100%;
+  transition: color 0.2s;
+}
+.ll.active { color: #fff; font-weight: 700; }
+.ll.past   { color: rgba(255,255,255,0.18); }
+.ll.next   { color: rgba(255,255,255,0.45); }
+#k-ftr { padding: 0.6rem 1.2rem; width: 100%; flex-shrink: 0; background: #000; border-top: 1px solid #222; z-index: 10; }
+#prog-track { width: 100%; height: 3px; background: #2a2a2a; border-radius: 2px; cursor: pointer; touch-action: none; }
+#prog-track:hover #prog-fill { background: #1ed760; }
+#prog-fill { height: 100%; background: #1DB954; border-radius: 2px; width: 0%; pointer-events: none; transition: width 0.08s linear; }
+.time-row { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.7rem; color: #555; }
 
 /* MOBILE */
 @media (max-width: 700px) {
@@ -310,7 +335,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
       <span id="speed-badge">1×</span>
       <button id="btn-faster">+</button>
       <button id="btn-rst">↩</button>
-      <button id="btn-exit" style="background:#dc2626">✕ Volver</button>
+      <button id="btn-exit">✕ Volver</button>
     </div>
   </div>
   <div id="lyrics-win"><div id="lyrics-box"></div></div>
