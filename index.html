@@ -372,7 +372,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
       <button id="btn-play">▶</button>
       <button id="btn-pause">⏸</button>
       <button id="btn-slower">−</button>
-      <span id="speed-badge">1×</span>
+      <span id="speed-badge">1x</span>
       <button id="btn-faster">+</button>
       <button id="btn-rst">↩</button>
       <button id="btn-exit">✕ Volver</button>
@@ -386,6 +386,8 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
 </div>
 
 <script>
+window.onerror=function(msg,src,line,col,err){document.title='ERR:'+line+':'+col+':'+msg;};
+
 'use strict';
 var REPERTORIO = [
   { title: "A Cualquier Otra Parte", artist: "Dorian" },
@@ -618,7 +620,7 @@ function show(n){
 function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el.textContent=text;el.className='msg'+(cls?' '+cls:'');}
 function applyY(y){document.getElementById('lyrics-box').style.transform='translateY('+y+'px)';}
 function spd(){return SPEED[speedIdx];}
-function updateBadge(){var s=spd();document.getElementById('speed-badge').textContent=(s===1?'1':s)+'×';}
+function updateBadge(){var s=spd();document.getElementById('speed-badge').textContent=(s===1?'1':s)+'x';}
 function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'').trim();}
 function fuzzyScore(text,query){
   var t=norm(text),q=norm(query);
@@ -789,9 +791,9 @@ function manualSearch(){
   if(!val){setMsg('idle-msg','Escribe algo para buscar.');return;}
   var list=document.getElementById('results-list');
   list.style.display='none';list.innerHTML='';
-  setMsg('idle-msg','Buscando…','info');
+  setMsg('idle-msg','Buscando...','info');
 
-  // Normalise: strip accents, lowercase — lrclib handles this well
+  // Normalise: strip accents, lowercase - lrclib handles this well
   var q=val; // send original to lrclib (it handles accents), fuzzy done locally too
 
   // 1st: try as title+artist (lrclib search endpoint)
@@ -817,7 +819,7 @@ function manualSearch(){
       }
 
       // 2nd fallback: search by lyrics fragment via lrclib
-      setMsg('idle-msg','Buscando por letra…','info');
+      setMsg('idle-msg','Buscando por letra...','info');
       fetch('https://lrclib.net/api/search?q='+encodeURIComponent(q)+'&type=lyrics',{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
         .then(function(r){return r.ok?r.json():[];})
         .then(function(arr2){
@@ -848,7 +850,7 @@ function showSearchResults(arr){
     var div=document.createElement('div');div.className='result-item';
     var icon=document.createElement('span');icon.className='result-icon';icon.textContent='🎵';
     var info=document.createElement('div');
-    var t=document.createElement('div');t.className='result-title';t.textContent=item.trackName||'—';
+    var t=document.createElement('div');t.className='result-title';t.textContent=item.trackName||'-';
     var a=document.createElement('div');a.className='result-artist';a.textContent=item.artistName||'';
     info.appendChild(t);if(item.artistName)info.appendChild(a);
     div.appendChild(icon);div.appendChild(info);
@@ -873,7 +875,7 @@ function searchLrclib(val){
       if(!arr||arr.length===0)return false;
       var normVal=norm(val);
 
-      // Case 1: user searched for an artist name → show their songs as list
+      // Case 1: user searched for an artist name -> show their songs as list
       var artistMatches=arr.filter(function(item){return norm(item.artistName||'').indexOf(normVal)!==-1;});
       if(artistMatches.length>=arr.length*0.4){
         var seen={};var ded=[];
@@ -894,14 +896,14 @@ function searchLrclib(val){
 
       var best=deduped[0],second=deduped[1];
 
-      // If same title appears with different artists → show list so user can pick
+      // If same title appears with different artists -> show list so user can pick
       var sameTitleDiff=deduped.filter(function(item){
         return norm(item.trackName||'')===norm(best.trackName||'')
           && norm(item.artistName||'')!==norm(best.artistName||'');
       });
 
       if(sameTitleDiff.length>0){
-        // Show known artists first, then others — max 6
+        // Show known artists first, then others - max 6
         var knownFirst=deduped.filter(function(i){return isKnownArtist(i.artistName);});
         var unknownRest=deduped.filter(function(i){return !isKnownArtist(i.artistName);});
         showList(knownFirst.concat(unknownRest).slice(0,6));
