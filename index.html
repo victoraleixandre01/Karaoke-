@@ -79,11 +79,6 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
   background: rgba(29,185,84,0.1); border: 2px solid rgba(29,185,84,0.4);
   color: #17a344; font-size: 1rem; font-weight: 700; cursor: pointer; -webkit-appearance: none;
 }
-#btn-start {
-  width: 100%; padding: 0.9rem; border-radius: 50px;
-  background: rgba(25,20,20,0.07); border: 2px solid rgba(25,20,20,0.2);
-  color: #191414; font-size: 1rem; font-weight: 700; cursor: pointer; -webkit-appearance: none;
-}
 #btn-english {
   width: 100%; padding: 0.9rem; border-radius: 50px;
   background: rgba(37,99,235,0.1); border: 2px solid rgba(37,99,235,0.35);
@@ -96,7 +91,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
   background: rgba(29,185,84,0.2);
   margin: 0.5rem 0;
 }
-#btn-random:active, #btn-start:active { opacity: 0.75; }
+#btn-random:active { opacity: 0.75; }
 
 /* REPERTOIRE PANEL */
 .home-right {
@@ -153,24 +148,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
 .msg.info { color: #1DB954; }
 
 /* LISTENING SCREEN */
-#screen-listening {
-  flex-direction: column; align-items: center; justify-content: center;
-  gap: 1.5rem; background: #f0faf4;
-}
-.pulse-wrap { position: relative; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; }
-.pr { position: absolute; border-radius: 50%; border: 2px solid rgba(29,185,84,0.3); animation: pr 2s ease-in-out infinite; }
-.pr1 { width: 140px; height: 140px; }
-.pr2 { width: 105px; height: 105px; border-color: rgba(29,185,84,0.5); animation-delay: .35s; }
-.pr3 { width: 74px; height: 74px; border-color: rgba(29,185,84,0.7); animation-delay: .7s; }
-@keyframes pr { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.09);opacity:0.5} }
-.mic-big { font-size: 3rem; z-index: 1; }
-#waveform { display: flex; align-items: center; gap: 5px; height: 50px; }
-.bar { width: 6px; background: #1DB954; border-radius: 3px; height: 8px; animation: wv 1s ease-in-out infinite; }
-@keyframes wv { 0%,100%{height:8px} 50%{height:44px} }
-.listen-lbl { font-size: 1rem; color: #555; text-align: center; line-height: 1.9; }
-.listen-lbl b { color: #1DB954; font-weight: 600; }
-.timer-arc { font-size: 2.5rem; font-weight: 800; color: #1DB954; }
-#btn-cancel { padding: 0.7rem 2rem; border-radius: 50px; background: transparent; border: 1.5px solid #ccc; color: #888; cursor: pointer; font-size: 0.9rem; -webkit-appearance: none; }
+
 
 /* FOUND SCREEN */
 #screen-found {
@@ -302,7 +280,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
     border-radius: 10px;
   }
   .btn-separator { margin: 1px 0; }
-  #btn-exitos, #btn-random, #btn-start, #btn-english {
+  #btn-exitos, #btn-random, #btn-english {
     padding: 0.55rem 0.5rem;
     font-size: 0.78rem;
     border-radius: 40px;
@@ -355,7 +333,6 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
       <div class="btn-separator"></div>
       <button id="btn-exitos">⭐ Éxitos fáciles</button>
       <button id="btn-random">🎲 Canción random</button>
-      <button id="btn-start">🎤 Escuchar canción</button>
       <button id="btn-english">🇬🇧 En inglés</button>
       <p id="idle-msg" class="msg"></p>
     </div>
@@ -367,18 +344,6 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
       <div id="rep-list"></div>
     </div>
   </div>
-</div>
-
-<div id="screen-listening" class="screen">
-  <div class="pulse-wrap">
-    <div class="pr pr1"></div><div class="pr pr2"></div><div class="pr pr3"></div>
-    <span class="mic-big">🎙️</span>
-  </div>
-  <div id="waveform"></div>
-  <div class="timer-arc" id="listen-countdown">8</div>
-  <div class="listen-lbl">Escuchando…<br><b>Acerca el móvil a la música</b></div>
-  <button id="btn-cancel">Cancelar</button>
-  <p id="listen-msg" class="msg info"></p>
 </div>
 
 <div id="screen-found" class="screen">
@@ -642,7 +607,7 @@ var SPEED=[0.5,0.65,0.8,1.0,1.25,1.5,2.0],speedIdx=3;
 var lineOffsets=[];
 
 function show(n){
-  ['idle','listening','found'].forEach(function(id){
+  ['idle','found'].forEach(function(id){
     document.getElementById('screen-'+id).classList.toggle('active',id===n);
   });
   var isKaraoke=n==='karaoke';
@@ -742,14 +707,12 @@ document.querySelector('.rep-title').textContent='⭐ Éxitos fáciles';
 document.getElementById('rep-filter').dataset.pool='exitos';
 renderRepList('',EXITOS);
 
-(function(){var wf=document.getElementById('waveform');for(var i=0;i<22;i++){var b=document.createElement('div');b.className='bar';b.style.animationDelay=(i*0.05)+'s';wf.appendChild(b);}})();
 
 var lw=document.getElementById('lyrics-win');
 lw.addEventListener('touchstart',function(e){touchStartY=e.touches[0].clientY;userScrolling=true;clearTimeout(window._sr);},{passive:true});
 lw.addEventListener('touchmove',function(e){var dy=e.touches[0].clientY-touchStartY;touchStartY=e.touches[0].clientY;manualOffset+=dy;applyY(currentY+manualOffset);},{passive:true});
 lw.addEventListener('touchend',function(){clearTimeout(window._sr);window._sr=setTimeout(function(){userScrolling=false;manualOffset=0;},3000);});
 
-document.getElementById('btn-start').addEventListener('click',startListen);
 document.getElementById('btn-cancel').addEventListener('click',function(){cancelListen();show('idle');});
 document.getElementById('btn-manual').addEventListener('click',manualSearch);
 document.getElementById('manual-input').addEventListener('keydown',function(e){
@@ -820,43 +783,6 @@ document.getElementById('rep-filter').addEventListener('focus',function(){
 
 function seekFromEvent(e){if(!lyrics.length)return;var r=document.getElementById('prog-track').getBoundingClientRect();seekK(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*totalMs());}
 function setPaused(p){paused=p;document.getElementById('btn-play').style.display=p?'flex':'none';document.getElementById('btn-pause').style.display=p?'none':'flex';}
-
-function startListen(){
-  setMsg('idle-msg','');
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setMsg('idle-msg','⚠️ Usa Safari (iOS) o Chrome (Android).');return;}
-  navigator.mediaDevices.getUserMedia({audio:true,video:false})
-    .then(function(stream){
-      chunks=[];var opts={};
-      if(MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))opts.mimeType='audio/webm;codecs=opus';
-      else if(MediaRecorder.isTypeSupported('audio/webm'))opts.mimeType='audio/webm';
-      else if(MediaRecorder.isTypeSupported('audio/mp4'))opts.mimeType='audio/mp4';
-      mediaRec=new MediaRecorder(stream,opts);
-      mediaRec.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
-      mediaRec.start(500);show('listening');
-      startCountdown(8,function(){recognizeAudio(stream);});
-    })
-    .catch(function(err){setMsg('idle-msg',err.name==='NotAllowedError'?'⚠️ Permiso denegado.':'⚠️ No se pudo acceder al micrófono.');});
-}
-function startCountdown(secs,cb){var r=secs;document.getElementById('listen-countdown').textContent=r;cntTmr=setInterval(function(){r--;document.getElementById('listen-countdown').textContent=r;if(r<=0){clearInterval(cntTmr);cb();}},1000);}
-function cancelListen(){clearInterval(cntTmr);try{if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();}catch(e){}try{if(mediaRec&&mediaRec.stream)mediaRec.stream.getTracks().forEach(function(t){t.stop();});}catch(e){}}
-function recognizeAudio(stream){
-  try{if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();}catch(e){}
-  stream.getTracks().forEach(function(t){t.stop();});
-  setMsg('listen-msg','Identificando canción…','info');
-  var mimeType=(mediaRec&&mediaRec.mimeType)?mediaRec.mimeType:'audio/webm';
-  var blob=new Blob(chunks,{type:mimeType});
-  if(blob.size<1000){setMsg('listen-msg','⚠️ No se captó audio.');setTimeout(function(){show('idle');},3000);return;}
-  var form=new FormData();
-  form.append('file',blob,'rec.'+(mimeType.includes('mp4')?'m4a':'webm'));
-  form.append('return','spotify,apple_music');form.append('api_token','test');
-  fetch('https://api.audd.io/',{method:'POST',body:form})
-    .then(function(r){return r.json();})
-    .then(function(data){
-      if(data.status==='success'&&data.result){song={title:data.result.title,artist:data.result.artist};showFoundAndLoad(song.title,song.artist,null);}
-      else{setMsg('listen-msg','No reconocida. Busca manualmente.','msg');setTimeout(function(){show('idle');},3000);}
-    })
-    .catch(function(){setMsg('listen-msg','⚠️ Error de red.','msg');setTimeout(function(){show('idle');},3000);});
-}
 
 function manualSearch(){
   var val=document.getElementById('manual-input').value.trim();
