@@ -386,7 +386,13 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
 </div>
 
 <script>
-window.onerror=function(msg,src,line,col,err){document.title='ERR:'+line+':'+col+':'+msg;};
+window.onerror=function(msg,src,line,col,err){
+  document.title='ERR:'+line+':'+col;
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;top:0;left:0;right:0;background:#c00;color:#fff;padding:12px;font:14px monospace;z-index:9999;white-space:pre-wrap;';
+  d.textContent='JS ERROR line '+line+' col '+col+':\n'+msg+(err?'\n'+err.stack:'');
+  document.body.appendChild(d);
+};
 
 var REPERTORIO = [
   { title: "A Cualquier Otra Parte", artist: "Dorian" },
@@ -721,7 +727,6 @@ lw.addEventListener('touchstart',function(e){touchStartY=e.touches[0].clientY;us
 lw.addEventListener('touchmove',function(e){var dy=e.touches[0].clientY-touchStartY;touchStartY=e.touches[0].clientY;manualOffset+=dy;applyY(currentY+manualOffset);},{passive:true});
 lw.addEventListener('touchend',function(){clearTimeout(window._sr);window._sr=setTimeout(function(){userScrolling=false;manualOffset=0;},3000);});
 
-document.getElementById('btn-cancel').addEventListener('click',function(){cancelListen();show('idle');});
 document.getElementById('btn-manual').addEventListener('click',manualSearch);
 document.getElementById('manual-input').addEventListener('keydown',function(e){
   if(e.key==='Enter'){e.target.blur();manualSearch();}
