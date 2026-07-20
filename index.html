@@ -787,43 +787,86 @@ function setPaused(p){paused=p;document.getElementById('btn-play').style.display
 function manualSearch(){
   var val=document.getElementById('manual-input').value.trim();
   if(!val){setMsg('idle-msg','Escribe algo para buscar.');return;}
+  var list=document.getElementById('results-list');
+  list.style.display='none';list.innerHTML='';
   setMsg('idle-msg','Buscando…','info');
-  document.getElementById('results-list').style.display='none';
-  document.getElementById('results-list').innerHTML='';
-  searchLrclib(val).then(function(found){
-    if(!found){
+
+  // Normalise: strip accents, lowercase — lrclib handles this well
+  var q=val; // send original to lrclib (it handles accents), fuzzy done locally too
+
+  // 1st: try as title+artist (lrclib search endpoint)
+  fetch('https://lrclib.net/api/search?q='+encodeURIComponent(q),{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
+    .then(function(r){return r.ok?r.json():[];})
+    .then(function(arr){
+      if(!arr)arr=[];
+
+      // Deduplicate by title+artist, apply score
+      var parts=q.split(/\s*[\u00b7\-]\s*/);
+      var qa=parts.length>1?parts[parts.length-1]:'';
+      arr.sort(function(a,b){return score(a,qa)-score(b,qa);});
+      var seen={},deduped=[];
+      arr.forEach(function(item){
+        var k=norm(item.trackName||'')+'||'+norm(item.artistName||'');
+        if(!seen[k]){seen[k]=true;deduped.push(item);}
+      });
+
+      if(deduped.length>0){
+        setMsg('idle-msg','');
+        showSearchResults(deduped.slice(0,8));
+        return;
+      }
+
+      // 2nd fallback: search by lyrics fragment via lrclib
       setMsg('idle-msg','Buscando por letra…','info');
-      var apiUrl='https://api.genius.com/search?q='+encodeURIComponent(val)+'&per_page=8';
-      var proxy='https://corsproxy.io/?'+encodeURIComponent(apiUrl);
-      fetch(proxy)
-        .then(function(r){return r.ok?r.json():null;})
-        .then(function(data){
-          if(!data||!data.response||!data.response.hits||!data.response.hits.length){setMsg('idle-msg','No encontrado. Prueba con el título.');return;}
-          var hits=data.response.hits.filter(function(h){return h.type==='song';}).slice(0,6);
-          if(!hits.length){setMsg('idle-msg','No encontrado.');return;}
-          if(hits.length===1){setMsg('idle-msg','');showFoundAndLoad(hits[0].result.title,hits[0].result.primary_artist.name,null);}
-          else{
-            setMsg('idle-msg','Elige la canción:','info');
-            var list=document.getElementById('results-list');list.innerHTML='';
-            hits.forEach(function(h){
-              var item=h.result;
-              var div=document.createElement('div');div.className='result-item';
-              var t=document.createElement('div');t.className='result-title';t.textContent=item.title;
-              var a=document.createElement('div');a.className='result-artist';a.textContent=item.primary_artist.name;
-              div.appendChild(t);div.appendChild(a);
-              div.addEventListener('click',function(){list.style.display='none';setMsg('idle-msg','');showFoundAndLoad(item.title,item.primary_artist.name,null);});
-              list.appendChild(div);
-            });
-            list.style.display='block';
+      fetch('https://lrclib.net/api/search?q='+encodeURIComponent(q)+'&type=lyrics',{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
+        .then(function(r){return r.ok?r.json():[];})
+        .then(function(arr2){
+          if(!arr2)arr2=[];
+          var seen2={},deduped2=[];
+          arr2.forEach(function(item){
+            var k=norm(item.trackName||'')+'||'+norm(item.artistName||'');
+            if(!seen2[k]){seen2[k]=true;deduped2.push(item);}
+          });
+          if(deduped2.length>0){
+            setMsg('idle-msg','');
+            showSearchResults(deduped2.slice(0,8));
+          } else {
+            setMsg('idle-msg','⚠️ No encontrado. Prueba otro fragmento o el título.');
           }
         })
-        .catch(function(){setMsg('idle-msg','No encontrado. Prueba con el título exacto.');});
-    }
+        .catch(function(){setMsg('idle-msg','⚠️ Error de conexión.');});
+    })
+    .catch(function(){setMsg('idle-msg','⚠️ Error de conexión. Revisa internet.');});
+}
+
+function showSearchResults(arr){
+  // If only one result and it's a clear match, go straight to it
+  if(arr.length===1){selectResult(arr[0]);return;}
+  var list=document.getElementById('results-list');
+  list.innerHTML='';
+  arr.forEach(function(item){
+    var div=document.createElement('div');div.className='result-item';
+    var icon=document.createElement('span');icon.className='result-icon';icon.textContent='🎵';
+    var info=document.createElement('div');
+    var t=document.createElement('div');t.className='result-title';t.textContent=item.trackName||'—';
+    var a=document.createElement('div');a.className='result-artist';a.textContent=item.artistName||'';
+    info.appendChild(t);if(item.artistName)info.appendChild(a);
+    div.appendChild(icon);div.appendChild(info);
+    div.addEventListener('mousedown',function(e){e.preventDefault();});
+    div.addEventListener('click',function(){
+      list.style.display='none';
+      document.getElementById('manual-input').classList.remove('dropdown-open');
+      setMsg('idle-msg','');
+      selectResult(item);
+    });
+    list.appendChild(div);
   });
+  list.style.display='block';
+  document.getElementById('manual-input').classList.add('dropdown-open');
 }
 
 function searchLrclib(val){
-  var parts=val.split(/\s*[·\-]\s*/);var qa=parts.length>1?parts[parts.length-1]:'';
+  var parts=val.split(/\s*[\u00b7\-]\s*/);var qa=parts.length>1?parts[parts.length-1]:'';
   return fetch('https://lrclib.net/api/search?q='+encodeURIComponent(val),{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
     .then(function(r){return r.ok?r.json():[];})
     .then(function(arr){
@@ -872,18 +915,7 @@ function searchLrclib(val){
 function showList(arr){
   var seen={},ded=[];
   arr.forEach(function(item){var k=norm(item.trackName||'')+'||'+norm(item.artistName||'');if(!seen[k]){seen[k]=true;ded.push(item);}});
-  if(ded.length===1){selectResult(ded[0]);return;}
-  setMsg('idle-msg','Elige la canción:','info');
-  var list=document.getElementById('results-list');list.innerHTML='';
-  ded.forEach(function(item){
-    var div=document.createElement('div');div.className='result-item';
-    var t=document.createElement('div');t.className='result-title';t.textContent=item.trackName||'—';
-    var a=document.createElement('div');a.className='result-artist';a.textContent=item.artistName||'';
-    div.appendChild(t);div.appendChild(a);
-    div.addEventListener('click',function(){selectResult(item);list.style.display='none';setMsg('idle-msg','');});
-    list.appendChild(div);
-  });
-  list.style.display='block';
+  showSearchResults(ded.slice(0,8));
 }
 function selectResult(item){song={title:item.trackName||'Desconocido',artist:item.artistName||''};document.getElementById('results-list').style.display='none';setMsg('idle-msg','');showFoundAndLoad(song.title,song.artist,item.id);}
 function showFoundAndLoad(title,artist,lrcId){
