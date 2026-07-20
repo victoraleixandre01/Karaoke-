@@ -738,7 +738,9 @@ document.getElementById('rep-filter').addEventListener('input',function(){
   var pool=this.dataset.pool==='english'?ENGLISH:this.dataset.pool==='exitos'?EXITOS:REPERTORIO;
   renderRepList(this.value,pool);
 });
-renderRepList('');
+document.querySelector('.rep-title').textContent='⭐ Éxitos fáciles';
+document.getElementById('rep-filter').dataset.pool='exitos';
+renderRepList('',EXITOS);
 
 (function(){var wf=document.getElementById('waveform');for(var i=0;i<22;i++){var b=document.createElement('div');b.className='bar';b.style.animationDelay=(i*0.05)+'s';wf.appendChild(b);}})();
 
