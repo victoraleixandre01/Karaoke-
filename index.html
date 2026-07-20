@@ -388,7 +388,6 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
 <script>
 window.onerror=function(msg,src,line,col,err){document.title='ERR:'+line+':'+col+':'+msg;};
 
-'use strict';
 var REPERTORIO = [
   { title: "A Cualquier Otra Parte", artist: "Dorian" },
   { title: "Agua", artist: "Jarabe De Palo" },
@@ -621,7 +620,14 @@ function setMsg(id,text,cls){var el=document.getElementById(id);if(!el)return;el
 function applyY(y){document.getElementById('lyrics-box').style.transform='translateY('+y+'px)';}
 function spd(){return SPEED[speedIdx];}
 function updateBadge(){var s=spd();document.getElementById('speed-badge').textContent=(s===1?'1':s)+'x';}
-function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'').trim();}
+function norm(s){
+  if(!s)return'';
+  var r=s.toLowerCase().normalize('NFD');
+  // Remove combining diacritics (works in all Safari versions)
+  var out='';
+  for(var i=0;i<r.length;i++){var c=r.charCodeAt(i);if(c<0x0300||c>0x036f)out+=r[i];}
+  return out.replace(/[^a-z0-9 ]/g,'').trim();
+}
 function fuzzyScore(text,query){
   var t=norm(text),q=norm(query);
   if(!q)return 0;
@@ -667,7 +673,7 @@ function score(item,qa){
   if(/live|directo/i.test(t))s+=30;if(/acoustic|acustic/i.test(t))s+=25;
   if(/remaster/i.test(t))s+=20;if(/remix/i.test(t))s+=25;
   if(/radio.?edit/i.test(t))s+=20;if(/maqueta|demo/i.test(t))s+=25;
-  if(/versión|version/i.test(t))s+=15;
+  if(/version/i.test(t))s+=15;
   // Boost: artist explicitly requested
   if(qa&&norm(a).indexOf(norm(qa))!==-1)s-=40;
   // Boost: artist is in our known repertoire (big bonus)
@@ -803,7 +809,7 @@ function manualSearch(){
       if(!arr)arr=[];
 
       // Deduplicate by title+artist, apply score
-      var parts=q.split(/\s*[\u00b7\-]\s*/);
+      var parts=q.split(/\s*-\s*/);
       var qa=parts.length>1?parts[parts.length-1]:'';
       arr.sort(function(a,b){return score(a,qa)-score(b,qa);});
       var seen={},deduped=[];
@@ -868,7 +874,7 @@ function showSearchResults(arr){
 }
 
 function searchLrclib(val){
-  var parts=val.split(/\s*[\u00b7\-]\s*/);var qa=parts.length>1?parts[parts.length-1]:'';
+  var parts=val.split(/\s*-\s*/);var qa=parts.length>1?parts[parts.length-1]:'';
   return fetch('https://lrclib.net/api/search?q='+encodeURIComponent(val),{headers:{'Lrclib-Client':'KaraokeApp/1.0'}})
     .then(function(r){return r.ok?r.json():[];})
     .then(function(arr){
